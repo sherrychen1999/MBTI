@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>吃貨動物測驗｜擇木良食</title>
+<meta name="description" content="12個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
+<meta property="og:title" content="如果你是動物，會是哪一種吃貨？｜擇木良食">
+<meta property="og:description" content="12個生活小情境，3分鐘測出你的吃貨動物。">
+<meta property="og:image" content="img/og.jpg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+:root { --accent: #2E6B4F; --ink: #1F2A24; --sub: #5B6660; --line: #DCE3DC; --bg: #F2F5F1; --soft: #E3F0E7; --sel: #EAF3EE; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #E6EBE5; }
+body { font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; background: var(--bg); display: flex; flex-direction: column; }
+.top { height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff; }
+.top b { font-size: 17px; letter-spacing: .04em; color: var(--accent); }
+.top span { font-size: 15px; color: var(--sub); }
+.main { flex: 1; padding: 20px 20px 32px; }
+.col { display: flex; flex-direction: column; gap: 18px; }
+.btn { width: 100%; height: 54px; border: 0; border-radius: 27px; background: var(--accent); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.btn.ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn[disabled] { background: #C9D2CB; color: #3D4842; cursor: default; font-size: 16px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.chip { font-size: 14px; background: var(--soft); color: #1E5A3C; padding: 5px 11px; border-radius: 999px; }
+.nav { display: flex; align-items: center; justify-content: space-between; }
+.back { width: 44px; height: 44px; border-radius: 22px; border: 1px solid var(--line); background: #fff; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.muted { font-size: 16px; color: var(--sub); }
+.bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 8px; background: var(--accent); border-radius: 4px; }
+.opt { width: 100%; min-height: 68px; padding: 16px 18px; border-radius: 16px; border: 1.5px solid #D5DED6; background: #fff; text-align: left; font-size: 18px; line-height: 1.55; color: var(--ink); }
+.opt.on { border: 2px solid var(--accent); background: var(--sel); font-weight: 500; }
+h1, h2 { margin: 0; }
+label.lb, .lb { font-size: 17px; font-weight: 700; }
+.pill { height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid #D5DED6; background: #fff; font-size: 15px; color: var(--ink); }
+.pill.on { border: 2px solid var(--accent); background: var(--sel); font-weight: 700; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.field { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #D5DED6; border-radius: 12px; padding: 0 12px; height: 52px; }
+.field input { flex: 1; min-width: 0; border: 0; outline: none; font-size: 18px; background: transparent; color: var(--ink); }
+.field span { font-size: 15px; color: var(--sub); }
+.check { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #D5DED6; background: #fff; text-align: left; font-size: 16px; line-height: 1.5; color: var(--ink); }
+.check.on { border: 2px solid var(--accent); background: var(--sel); }
+.box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #8A968F; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+.on .box { background: var(--accent); border-color: var(--accent); }
+.radio .box { border-radius: 11px; }
+.on.radio .box { background: #fff; border: 6px solid var(--accent); }
+.consent { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; border: 0; background: transparent; padding: 0; font-size: 16px; font-weight: 700; color: var(--ink); text-align: left; line-height: 1.5; }
+.consent .box { margin-top: 1px; }
+.consent.on .box { background: var(--accent); border-color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.tiles div { aspect-ratio: 1; border-radius: 14px; background: #F7F4EC; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.tiles img { width: 105%; height: 105%; object-fit: cover; display: block; }
+.tiles .me { background: #fff; color: var(--accent); font-size: 22px; font-weight: 900; }
+.rec { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #E6EBE5; }
+.tag { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; flex-shrink: 0; }
+.tag.ok { background: var(--soft); color: #1E5A3C; }
+.tag.ask { background: #FBEFD9; color: #7A4B0E; }
+.dock { position: sticky; bottom: 0; padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.dock a { flex: 1; height: 50px; font-size: 16px; }
+.sharecard { width: 100%; border-radius: 24px; display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><b>擇木良食</b><span>吃貨動物測驗</span></div>
+  <div class="main" id="main"></div>
+  <div id="dock"></div>
+</div>
+
+<script>
+/* ===================== 設定區：上線前填這裡 ===================== */
+const CONFIG = {
+  GAS_URL: '',      // Google Apps Script 網頁應用程式網址（https://script.google.com/macros/s/.../exec）
+  LIFF_ID: '',      // LIFF ID（例如 2001234567-AbCdEfGh），沒有就留空，測驗照常可用
+  BOOK_URL: '#',    // 門診預約網址
+  SHOP_URL: '#',    // 官網網址；也可在 SHOP_BY_TYPE 為每一型指定搭配頁
+  LINE_URL: 'https://line.me/R/ti/p/@selectgoodfood',
+  SHOP_BY_TYPE: {}  // 例如 { ESBQ: 'https://.../bundle-raccoon' }
+};
+/* =============================================================== */
+
+const QUIZ = [
+  ['什麼時候最容易想吃東西？', [['E', '工作或家務忙到累的時候'], ['H', '真的肚子餓、胃在叫的時候']]],
+  ['心情不好時，你通常會？', [['E', '想吃點好吃的犒賞自己'], ['H', '照常吃，食量不太受影響']]],
+  ['吃完一頓飯後一小時又想吃東西，通常是因為？', [['E', '嘴巴閒著、想找點東西吃'], ['H', '上一餐沒吃飽、真的又餓了']]],
+  ['下午肚子有點餓，你最想拿起的是？', [['S', '蛋糕、餅乾或一杯手搖飲'], ['R', '超商飯糰、肉包或一碗麵']]],
+  ['如果要你戒掉一樣，最痛苦的是？', [['S', '甜點和手搖飲'], ['R', '白飯和麵食']]],
+  ['一餐吃完後，你覺得少了什麼最不滿足？', [['S', '沒有來點甜的，總覺得這餐不完整'], ['R', '沒吃到飯或麵，總覺得沒吃飽']]],
+  ['你的三餐時間大概是？', [['O', '每天差不多固定'], ['B', '有空才吃，常常一餐跳過或拖很晚']]],
+  ['你的早餐通常是？', [['O', '每天都會吃，早餐店、在家或到公司吃都算'], ['B', '常常來不及吃，或拖到快中午才吃']]],
+  ['你的晚餐通常幾點吃完？', [['O', '大多在晚上8點前吃完'], ['B', '常常超過8點，或時間不固定']]],
+  ['過去一個月，你每週運動幾次？', [['A', '2次以上'], ['Q', '1次以下']], '指特別安排、持續30分鐘以上的運動，例如快走、瑜珈、重訓、游泳。'],
+  ['你的工作或日常生活，大部分時間是？', [['A', '常常走動、站著或跑來跑去'], ['Q', '大多坐著，例如辦公、騎車開車或滑手機']]],
+  ['放假的時候，你比較常？', [['A', '出門走走、爬山或到戶外活動'], ['Q', '在家休息、追劇、補眠']]]
+];
+const ORDER = [0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11];
+
+const TYPES = {
+  ESOA: ['海豚', '練完要來塊蛋糕的獎勵派', '你有運動的好習慣，壓力一大就想用甜點犒賞自己。', '運動後先補充蛋白質，想吃甜的時候，拿一根大豆棒代替蛋糕。', ['soybar', 'burn']],
+  ESOQ: ['波斯貓', '三點下午茶準時報到的OL', '生活很規律，下午的甜點時間是你的充電站。', '下午茶先吃一根大豆棒，再決定要不要點蛋糕。', ['soybar']],
+  ESBA: ['蜂鳥', '靠手搖續命的鐵人', '每天忙著跑來跑去，一杯手搖是你撐下去的動力。', '手搖改成無糖茶，再配一根大豆棒，甜的有了，熱量少很多。', ['soybar', 'meal', 'burn']],
+  ESBQ: ['浣熊', '夜深人靜才開零食的療癒系', '白天忙著顧工作、顧身邊的人，夜深了才有屬於自己的零食時間。', '零食先倒進小碗，不要整包拿著吃；或直接換成一根大豆棒。', ['soybar', 'meal']],
+  HSOA: ['企鵝', '流完汗就想吃冰的消暑派', '愛動也愛甜，運動完特別想來點冰涼甜的。', '運動後優先補充蛋白質，冰品選小份就好。', ['soybar', 'burn']],
+  HSOQ: ['無尾熊', '飯後不吃甜就不完整的收尾控', '三餐準時，但每一餐都需要一個甜甜的句點。', '飯後的甜點，就用一根大豆棒收尾。', ['soybar']],
+  HSBA: ['松鼠', '包包裡永遠有糖果的陀螺', '轉個不停，常常餓了才發現還沒吃飯。', '把包包裡的糖果換成一根大豆棒，餓的時候先吃它。', ['soybar', 'meal', 'burn']],
+  HSBQ: ['倉鼠', '忘了吃飯、一餓就開餅乾的空腹族', '忙起來就忘了吃，餓過頭就隨手抓餅乾。', '正餐不要跳過，來不及吃就先喝一份代餐。', ['soybar', 'meal']],
+  EROA: ['台灣黑熊', '壓力越大越想吃滷肉飯的拚命派', '認真生活也認真運動，壓力一來最想吃一碗飯。', '先吃菜和肉，飯留到最後。', ['carb', 'burn']],
+  EROQ: ['水豚', '心情不好就要一碗牛肉麵的療癒胃', '生活規律，心情就靠一碗熱騰騰的麵來安慰。', '麵多加一份燙青菜，白飯可以換成半碗糙米或地瓜。', ['carb']],
+  ERBA: ['獵豹', '邊開車邊吞飯糰的趕場族', '行程滿檔，三餐常常在移動中解決。', '飯糰搭配一瓶無糖豆漿，飽足感更持久。', ['carb', 'meal', 'burn']],
+  ERBQ: ['貓頭鷹', '深夜煮泡麵的夜貓子', '白天太忙，夜深了才想好好吃點東西。', '宵夜換成一份蛋白代餐。', ['carb', 'meal']],
+  HROA: ['柴犬', '便當一定要大碗的活力派', '活動量大、胃口也好，一定要吃飽才有力氣。', '吃到七分飽就停，運動日再多補一點碳水。', ['carb', 'burn']],
+  HROQ: ['台灣水牛', '準時開飯的台式胃', '三餐準時、白飯不能少，標準的台式胃。', '外食時主動跟店家說飯量減半。', ['carb']],
+  HRBA: ['狐狸', '一碗麵解決一餐的效率派', '時間就是一切，一碗麵最快最方便。', '麵加一份燙青菜和一顆滷蛋。', ['carb', 'meal', 'burn']],
+  HRBQ: ['獅子', '一天只吃一頓大餐的報復型吃貨', '平常沒空好好吃，一有機會就吃到十一分飽。', '吃到飽先吃蛋白質，七分飽就收手。', ['carb', 'meal']]
+};
+const PRODUCTS = {
+  carb: ['碳水對策', '陪你好好享受每一碗飯'],
+  soybar: ['大豆棒', '想吃甜的時候，對自己好一點'],
+  meal: ['蛋白代餐', '忙碌的日子，你也值得好好吃一餐'],
+  burn: ['好燃對策', '動起來之前，給自己一點活力']
+};
+const TILES = ['HROA', 'ESBQ', 'ESOA', 'HRBQ', 'EROQ', 'ESOQ', 'HRBA', 'HSBA', 'EROA', '', 'HSOA', 'ERBA', 'HSBQ', 'HSOQ', 'ERBQ', 'ESBA'];
+const AGES = ['30歲以下', '30–34', '35–39', '40–44', '45–49', '50–55', '55歲以上'];
+const GOALS = ['體重數字', '腰腹線條', '精神體力', '飲食習慣', '產後恢復'];
+const PERSONAL = [['preg', '懷孕中、準備懷孕，或正在哺乳'], ['htn', '高血壓'], ['dm', '血糖偏高或糖尿病'], ['lipid', '血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['liver', '肝臟疾病或肝指數異常'], ['heart', '心律不整或心血管疾病'], ['caff', '喝咖啡容易心悸或失眠'], ['glp1', '正在使用減重藥物或瘦瘦針'], ['meds', '正在長期服用其他藥物'], ['allergy', '對大豆或牛奶過敏'], ['none', '以上都沒有']];
+const CHANGES = [['gain', '增加超過5公斤'], ['stable', '大致持平'], ['loss', '沒有特別減肥，卻瘦了5公斤以上']];
+const FAMILY = [['htn', '高血壓'], ['dm', '糖尿病或血糖偏高'], ['lipid', '高血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['cvd', '心臟病或中風'], ['none', '以上都沒有'], ['unknown', '不清楚']];
+
+const CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+const BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+
+const params = new URLSearchParams(location.search);
+const SRC = params.get('src') || (document.referrer ? 'referral' : 'direct');
+const SESSION = Math.random().toString(36).slice(2) + Date.now().toString(36);
+let LINE_UID = '';
+let IN_LINE = false;
+
+function fresh() {
+  return { step: 'intro', qi: 0, answers: [], age: '', height: '', weight: '', waist: '', waistUnknown: false, goals: [],
+           consent: false, marketing: false, personal: [], change: '', family: [], sent: false };
+}
+let S = fresh();
+
+function esc(t) { return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function code() {
+  const a = S.answers;
+  const pick = (x, y) => (a.filter((v) => v === x).length >= 2 ? x : y);
+  return pick('E', 'H') + pick('S', 'R') + pick('O', 'B') + pick('A', 'Q');
+}
+function toggle(list, id, exclusive) {
+  if (exclusive.includes(id)) return list.includes(id) ? [] : [id];
+  const l = list.filter((x) => !exclusive.includes(x));
+  return l.includes(id) ? l.filter((x) => x !== id) : l.concat([id]);
+}
+function bodyOk() {
+  const h = parseFloat(S.height), w = parseFloat(S.weight);
+  return !!S.age && h >= 100 && h <= 220 && w >= 30 && w <= 200;
+}
+function healthOk() { return S.consent && S.personal.length > 0 && !!S.change && S.family.length > 0; }
+
+function result() {
+  const c = code(), T = TYPES[c];
+  const P = (id) => S.personal.includes(id);
+  const h = parseFloat(S.height), w = parseFloat(S.weight);
+  const bmi = w / Math.pow(h / 100, 2);
+  const waist = S.waistUnknown ? 0 : parseFloat(S.waist) || 0;
+  const famRisk = ['htn', 'dm', 'lipid', 'kidney', 'cvd'].some((x) => S.family.includes(x));
+  const bigWaist = waist >= 80;
+  const escort = P('htn') || P('heart') || P('dm') || P('lipid') || P('kidney') || P('glp1') || bmi >= 27 || (famRisk && bigWaist) || S.change === 'loss';
+  const care = !escort && (famRisk || bmi >= 24 || bigWaist || P('preg') || P('liver'));
+  const tier = escort ? 'escort' : care ? 'care' : 'free';
+  let list = T[4].slice();
+  if (P('glp1')) list = ['meal'].concat(list.filter((x) => x !== 'meal'));
+  if (!list.includes('meal')) list.push('meal');
+  const judge = (id) => {
+    if (id === 'burn') {
+      if (P('preg')) return ['no', '含咖啡因'];
+      if (P('liver')) return ['no', '含綠茶萃取'];
+      if (P('htn') || P('heart') || P('caff')) return ['no', '含咖啡因'];
+    }
+    if (id === 'soybar' && P('allergy')) return ['no', '含大豆'];
+    if (id === 'meal' && P('allergy')) return ['no', '可能含大豆或乳製品'];
+    if ((id === 'soybar' || id === 'meal') && P('kidney')) return ['ask'];
+    if (P('preg')) return ['ask'];
+    if (id === 'carb' && (P('dm') || P('glp1'))) return ['ask'];
+    if (P('meds')) return ['ask'];
+    if (escort) return ['ask'];
+    return ['ok'];
+  };
+  const judged = list.map((id) => ({ id, j: judge(id) }));
+  return { c, T, bmi, waist, tier, recs: judged.filter((x) => x.j[0] !== 'no'), excluded: judged.filter((x) => x.j[0] === 'no') };
+}
+
+/* ---------- 資料送出 ---------- */
+function bmiBand(b) { return b < 18.5 ? '<18.5' : b < 24 ? '18.5-24' : b < 27 ? '24-27' : '27+'; }
+function send(payload) {
+  if (!CONFIG.GAS_URL) return;
+  try {
+    fetch(CONFIG.GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  } catch (e) { /* 送不出去也不影響測驗 */ }
+}
+function sendResult(r) {
+  if (S.sent) return;
+  S.sent = true;
+  send({
+    kind: 'result', session: SESSION, src: SRC, inLine: IN_LINE,
+    lineUid: S.marketing ? LINE_UID : '',
+    marketing: S.marketing, type: r.c, animal: r.T[0], tier: r.tier,
+    age: S.age, bmiBand: bmiBand(r.bmi), waistOver80: r.waist ? (r.waist >= 80) : '',
+    goals: S.goals.join('、'), recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
+  });
+}
+function sendClick(btn, r) {
+  send({ kind: 'click', session: SESSION, src: SRC, type: r.c, tier: r.tier, button: btn, lineUid: S.marketing ? LINE_UID : '' });
+}
+
+/* ---------- 畫面 ---------- */
+function nav(back, label) {
+  return `<div class="nav"><button type="button" class="back" data-act="${back}" aria-label="返回">${BACK}</button><span class="muted">${label}</span><span style="width:44px"></span></div>`;
+}
+function vIntro() {
+  const tiles = TILES.map((t) => t ? `<div><img src="img/a_${t}.png" alt=""></div>` : '<div class="me">你？</div>').join('');
+  return `<div class="col" style="gap:14px">
+    <div style="background:var(--accent);border-radius:24px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;color:#fff">
+      <span style="font-size:14px;font-weight:700;letter-spacing:.12em;padding:0 4px">16種吃貨動物</span>
+      <h1 style="font-size:28px;line-height:1.3;font-weight:900;padding:0 4px">如果你是動物，<br>會是哪一種吃貨？</h1>
+      <div class="tiles" aria-hidden="true">${tiles}</div>
+    </div>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#2F3A34;text-align:center">12個生活小情境，只問你平常怎麼過。<br>結果可能跟你想的不一樣！</p>
+    <div style="display:flex;justify-content:center;gap:8px"><span class="chip">約3分鐘</span><span class="chip">12題單選</span><span class="chip">營養師團隊設計</span></div>
+    <button type="button" class="btn" data-act="start" style="height:56px;font-size:19px">開始測驗，揭曉我的類型</button>
+  </div>`;
+}
+function vQuiz() {
+  const q = QUIZ[ORDER[S.qi]];
+  const opts = q[1].map((o) => `<button type="button" class="opt ${S.answers[S.qi] === o[0] ? 'on' : ''}" data-act="pick" data-v="${o[0]}">${esc(o[1])}</button>`).join('');
+  return `<div class="col" style="gap:20px">
+    ${nav('quizBack', `第 ${S.qi + 1} 題／共 12 題`)}
+    <div class="bar"><i style="width:${Math.round((S.qi + 1) / 12 * 100)}%"></i></div>
+    <h2 style="font-size:26px;line-height:1.45;font-weight:700">${esc(q[0])}</h2>
+    ${q[2] ? `<p style="margin:0;font-size:16px;line-height:1.6;color:var(--sub);background:#fff;border-radius:12px;padding:12px 14px">${esc(q[2])}</p>` : ''}
+    <div class="col" style="gap:12px">${opts}</div>
+  </div>`;
+}
+function vBody() {
+  const ages = AGES.map((a) => `<button type="button" class="pill ${S.age === a ? 'on' : ''}" data-act="age" data-v="${a}">${a}</button>`).join('');
+  const goals = GOALS.map((g) => `<button type="button" class="pill ${S.goals.includes(g) ? 'on' : ''}" data-act="goal" data-v="${g}">${g}</button>`).join('');
+  const waist = S.waistUnknown
+    ? `<div class="field" style="flex:1;background:#E9EEE8;border-color:#E9EEE8"><span>不知道也沒關係</span></div><button type="button" class="pill on" data-act="waistUnknown" style="height:52px;border-radius:12px">不知道</button>`
+    : `<label class="field" style="flex:1"><input id="inWa" type="number" inputmode="decimal" placeholder="以肚臍為準" value="${esc(S.waist)}" data-in="waist"><span>公分</span></label><button type="button" class="pill" data-act="waistUnknown" style="height:52px;border-radius:12px">不知道</button>`;
+  return `<div class="col" style="gap:22px">
+    ${nav('backToQuiz', '最後 2 步・1／2')}
+    <div style="background:var(--accent);color:#fff;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
+      <span style="font-size:18px;font-weight:700">12題完成！</span>
+      <span style="font-size:16px;line-height:1.6">再花1分鐘，就能揭曉你的吃貨動物，還有一份專屬飲食建議。</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:700">先認識一下你的身體</h2>
+    <div class="col" style="gap:10px"><span class="lb">年齡</span><div class="grid3">${ages}</div></div>
+    <div class="grid2">
+      <div class="col" style="gap:8px"><label class="lb" for="inH">身高</label><label class="field"><input id="inH" type="number" inputmode="decimal" placeholder="160" value="${esc(S.height)}" data-in="height"><span>公分</span></label></div>
+      <div class="col" style="gap:8px"><label class="lb" for="inW">體重</label><label class="field"><input id="inW" type="number" inputmode="decimal" placeholder="58" value="${esc(S.weight)}" data-in="weight"><span>公斤</span></label></div>
+    </div>
+    <div class="col" style="gap:8px"><label class="lb" for="inWa">腰圍</label><div style="display:flex;gap:8px;align-items:center">${waist}</div></div>
+    <div class="col" style="gap:10px"><span class="lb">現在最想調整的是？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span><div class="wrap">${goals}</div></div>
+    <button type="button" class="btn" id="bodyNext" data-act="toHealth" ${bodyOk() ? '' : 'disabled'}>${bodyOk() ? '下一步' : '填好年齡、身高、體重就能繼續'}</button>
+  </div>`;
+}
+function checks(list, sel, act, radio) {
+  return list.map((p) => {
+    const on = radio ? sel === p[0] : sel.includes(p[0]);
+    return `<button type="button" class="check ${radio ? 'radio' : ''} ${on ? 'on' : ''}" data-act="${act}" data-v="${p[0]}"><span class="box">${on && !radio ? CHECK : ''}</span><span>${esc(p[1])}</span></button>`;
+  }).join('');
+}
+function vHealth() {
+  const consentBtn = (key, text) => `<button type="button" class="consent ${S[key] ? 'on' : ''}" data-act="${key}"><span class="box">${S[key] ? CHECK : ''}</span><span>${text}</span></button>`;
+  return `<div class="col" style="gap:22px">
+    ${nav('toBody', '最後 2 步・2／2')}
+    <h2 style="font-size:24px;font-weight:700">最後，了解一下你的健康狀況</h2>
+    <div class="card col" style="gap:12px">
+      <p style="margin:0;font-size:15px;line-height:1.7;color:#3D4842">以下健康資訊只在你的手機上用來判斷哪些產品適合你，<b>不會被傳送或儲存</b>。</p>
+      ${consentBtn('consent', '我了解並同意')}
+    </div>
+    ${S.consent ? `
+    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你目前有以下哪些狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(PERSONAL, S.personal, 'personal')}</div>
+    <div class="col" style="gap:10px"><span class="lb">過去半年，體重有沒有明顯變化？</span>${checks(CHANGES, S.change, 'change', true)}</div>
+    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你的父母或兄弟姊妹，有沒有以下狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(FAMILY, S.family, 'family')}</div>
+    <div class="card col" style="gap:8px">
+      ${consentBtn('marketing', '我願意收到擇木良食依我的吃貨類型提供的飲食資訊與優惠（選填）')}
+      <span style="font-size:13px;line-height:1.6;color:var(--sub)">勾選後，我們會保存你的類型、年齡區間等測驗結果${IN_LINE ? '與LINE帳號識別碼' : ''}，不含任何健康狀況。可隨時在LINE取消。</span>
+    </div>` : ''}
+    <button type="button" class="btn" data-act="toReport" ${healthOk() ? '' : 'disabled'}>${healthOk() ? '揭曉我的吃貨動物' : '勾選同意並回答三題後就能看結果'}</button>
+  </div>`;
+}
+const TIERS = {
+  escort: ['專人陪伴型', '你已經很照顧自己了', '由醫師和營養師一起幫你量身規劃，會更安心、也更有效率。三樹、土城院區有體重管理門診。', '#E4ECF7', [['預約門診', 'book'], ['LINE問營養師', 'line']]],
+  care: ['加強照顧型', '謝謝你願意認真了解自己', '提早有人陪你規劃飲食，會走得更輕鬆。先跟營養師聊聊吧！', '#FBEFD9', [['加LINE問營養師', 'line'], ['看我的專屬搭配', 'shop']]],
+  free: ['自在保養型', '你的狀態很不錯！', '保持現在的好習慣，再搭配適合你的小夥伴就很夠了。', '#E3F0E7', [['看我的專屬搭配', 'shop'], ['加LINE問營養師', 'line']]]
+};
+function href(kind, c) {
+  if (kind === 'book') return CONFIG.BOOK_URL;
+  if (kind === 'line') return CONFIG.LINE_URL;
+  const u = CONFIG.SHOP_BY_TYPE[c] || CONFIG.SHOP_URL;
+  return u === '#' ? u : u + (u.includes('?') ? '&' : '?') + 'utm_source=quiz&utm_medium=' + encodeURIComponent(SRC) + '&utm_campaign=' + c;
+}
+function vReport() {
+  const r = result(), t = TIERS[r.tier];
+  const recs = r.recs.map((x) => `<div class="rec"><div class="col" style="gap:2px;min-width:0"><span style="font-size:18px;font-weight:700">${PRODUCTS[x.id][0]}</span><span style="font-size:15px;color:var(--accent)">${PRODUCTS[x.id][1]}</span></div>${x.j[0] === 'ok' ? '<span class="tag ok">適合你</span>' : '<span class="tag ask">先諮詢</span>'}</div>`).join('');
+  const hasAsk = r.recs.some((x) => x.j[0] === 'ask');
+  const excl = r.excluded.map((x) => `${PRODUCTS[x.id][0]}（${x.j[1]}）`).join('、');
+  const nums = 'BMI ' + r.bmi.toFixed(1) + (r.waist ? '｜腰圍 ' + r.waist + ' 公分' : '');
+  return `<div class="col" style="gap:16px">
+    <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
+    <img class="sharecard" src="img/card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
+    <span style="font-size:14px;color:var(--sub);text-align:center">長按圖卡就能儲存，分享給朋友測測看</span>
+    <p style="margin:0;font-size:16px;line-height:1.7;color:#3D4842;text-align:center">${r.T[2]}</p>
+    <div style="background:${t[3]};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:15px;font-weight:700;background:#fff;padding:5px 12px;border-radius:999px">${t[0]}</span><span style="font-size:14px;color:#2F3A34">${nums}</span></div>
+      <span style="font-size:20px;font-weight:700;line-height:1.45">${t[1]}</span>
+      <p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${t[2]}</p>
+      ${r.tier === 'escort' ? '<span style="font-size:14px;color:#2F3A34;text-align:center">也可以直接跟診所櫃檯預約</span>' : ''}
+    </div>
+    ${S.change === 'loss' ? '<div class="card" style="padding:12px 14px;font-size:15px;line-height:1.6;color:#2F3A34">沒有特別減肥，體重卻少了不少，建議找醫師做個檢查，安心最重要。</div>' : ''}
+    <div class="card col" style="gap:12px">
+      <span style="font-size:19px;font-weight:700">今天，也好好照顧自己</span>
+      ${recs}
+      ${hasAsk ? '<span style="font-size:14px;line-height:1.6;color:#7A4B0E">標示「先諮詢」的產品，建議先問營養師或醫師再開始。</span>' : ''}
+      ${excl ? `<span style="font-size:14px;line-height:1.6;color:#4A5650">先不推薦：${excl}</span>` : ''}
+      ${r.tier !== 'escort' ? '<span style="font-size:14px;color:var(--sub)">專屬搭配可以在官網找到，金鶯診所旁的合作藥局也買得到</span>' : ''}
+    </div>
+    <div class="card col" style="gap:4px;padding:14px 16px"><span style="font-size:16px;font-weight:700">給你的小提醒</span><p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${r.T[3]}</p></div>
+    <p style="margin:0;font-size:13px;line-height:1.6;color:var(--sub)">本測驗用於了解個人飲食與生活習慣，不能取代醫師診斷。產品皆為一般食品，請搭配均衡飲食與規律運動。</p>
+    <button type="button" data-act="restart" style="align-self:center;height:44px;padding:0 16px;border:0;background:transparent;color:var(--sub);font-size:15px;text-decoration:underline">重新測驗</button>
+  </div>`;
+}
+function vDock() {
+  if (S.step !== 'report') return '';
+  const r = result(), t = TIERS[r.tier];
+  return `<div class="dock">${t[4].map((b, i) => `<a class="btn ${i ? 'ghost' : ''}" href="${href(b[1], r.c)}" target="_blank" rel="noopener" data-click="${b[1]}">${b[0]}</a>`).join('')}</div>`;
+}
+
+const VIEWS = { intro: vIntro, quiz: vQuiz, body: vBody, health: vHealth, report: vReport };
+function render(scrollTop) {
+  document.getElementById('main').innerHTML = VIEWS[S.step]();
+  document.getElementById('dock').innerHTML = vDock();
+  if (scrollTop) window.scrollTo(0, 0);
+  if (S.step === 'report') sendResult(result());
+}
+function go(step) { S.step = step; render(true); }
+
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('[data-click]');
+  if (link) { sendClick(link.dataset.click, result()); return; }
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const v = el.dataset.v;
+  switch (el.dataset.act) {
+    case 'start': S.qi = 0; go('quiz'); break;
+    case 'quizBack': if (S.qi > 0) { S.qi--; render(true); } else go('intro'); break;
+    case 'pick': S.answers[S.qi] = v; if (S.qi < 11) { S.qi++; render(true); } else go('body'); break;
+    case 'backToQuiz': S.qi = 11; go('quiz'); break;
+    case 'age': S.age = v; render(); break;
+    case 'goal': S.goals = toggle(S.goals, v, []); render(); break;
+    case 'waistUnknown': S.waistUnknown = !S.waistUnknown; S.waist = ''; render(); break;
+    case 'toHealth': if (bodyOk()) go('health'); break;
+    case 'toBody': go('body'); break;
+    case 'consent': S.consent = !S.consent; render(); break;
+    case 'marketing': S.marketing = !S.marketing; render(); break;
+    case 'personal': S.personal = toggle(S.personal, v, ['none']); render(); break;
+    case 'change': S.change = v; render(); break;
+    case 'family': S.family = toggle(S.family, v, ['none', 'unknown']); render(); break;
+    case 'toReport': if (healthOk()) go('report'); break;
+    case 'restart': S = fresh(); go('intro'); break;
+  }
+});
+document.addEventListener('input', (e) => {
+  const k = e.target.dataset.in;
+  if (!k) return;
+  S[k] = e.target.value;
+  const b = document.getElementById('bodyNext');
+  if (b) { const ok = bodyOk(); b.disabled = !ok; b.textContent = ok ? '下一步' : '填好年齡、身高、體重就能繼續'; }
+});
+
+/* ---------- LINE（LIFF）---------- */
+async function initLiff() {
+  if (!CONFIG.LIFF_ID || !window.liff) return;
+  try {
+    await liff.init({ liffId: CONFIG.LIFF_ID });
+    IN_LINE = liff.isInClient();
+    if (!liff.isLoggedIn()) { if (IN_LINE) liff.login(); return; }
+    const p = await liff.getProfile();
+    LINE_UID = p.userId || '';
+  } catch (e) { /* 不在LINE或設定有誤時，測驗照常進行 */ }
+}
+
+render();
+initLiff();
+</script>
+</body>
+</html>
