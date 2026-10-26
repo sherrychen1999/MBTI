@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>吃貨動物測驗｜擇木良食</title>
-<meta name="description" content="12個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
+<meta name="description" content="8個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
 <meta property="og:title" content="如果你是動物，會是哪一種吃貨？｜擇木良食">
-<meta property="og:description" content="12個生活小情境，3分鐘測出你的吃貨動物。">
+<meta property="og:description" content="8個生活小情境，2分鐘測出你的吃貨動物。">
 <meta property="og:image" content="https://sherrychen1999.github.io/MBTI/og.jpg">
 <meta property="og:url" content="https://sherrychen1999.github.io/MBTI/">
 <meta property="og:type" content="website">
@@ -76,7 +76,7 @@ label.lb, .lb { font-size: 17px; font-weight: 700; }
 </head>
 <body>
 <div class="app">
-  <div class="top"><b>擇木良食</b><span>吃貨動物測驗</span></div>
+  <div class="top"><img src="logo.png" alt="擇木良食" style="height:32px;width:auto;display:block"><span>吃貨動物測驗</span></div>
   <div class="main" id="main"></div>
   <div id="dock"></div>
 </div>
@@ -95,20 +95,16 @@ const CONFIG = {
 /* =============================================================== */
 
 const QUIZ = [
-  ['什麼時候最容易想吃東西？', [['E', '工作或家務忙到累的時候'], ['H', '真的肚子餓、胃在叫的時候']]],
-  ['心情不好時，你通常會？', [['E', '想吃點好吃的犒賞自己'], ['H', '照常吃，食量不太受影響']]],
-  ['吃完一頓飯後一小時又想吃東西，通常是因為？', [['E', '嘴巴閒著、想找點東西吃'], ['H', '上一餐沒吃飽、真的又餓了']]],
-  ['下午肚子有點餓，你最想拿起的是？', [['S', '蛋糕、餅乾或一杯手搖飲'], ['R', '超商飯糰、肉包或一碗麵']]],
-  ['如果要你戒掉一樣，最痛苦的是？', [['S', '甜點和手搖飲'], ['R', '白飯和麵食']]],
-  ['一餐吃完後，你覺得少了什麼最不滿足？', [['S', '沒有來點甜的，總覺得這餐不完整'], ['R', '沒吃到飯或麵，總覺得沒吃飽']]],
-  ['你的三餐時間大概是？', [['O', '每天差不多固定'], ['B', '有空才吃，常常一餐跳過或拖很晚']]],
-  ['你的早餐通常是？', [['O', '每天都會吃，早餐店、在家或到公司吃都算'], ['B', '常常來不及吃，或拖到快中午才吃']]],
-  ['你的晚餐通常幾點吃完？', [['O', '大多在晚上8點前吃完'], ['B', '常常超過8點，或時間不固定']]],
-  ['過去一個月，你每週運動幾次？', [['A', '2次以上'], ['Q', '1次以下']], '指特別安排、持續30分鐘以上的運動，例如快走、瑜珈、重訓、游泳。'],
-  ['你的工作或日常生活，大部分時間是？', [['A', '常常走動、站著或跑來跑去'], ['Q', '大多坐著，例如辦公、騎車開車或滑手機']]],
-  ['放假的時候，你比較常？', [['A', '出門走走、爬山或到戶外活動'], ['Q', '在家休息、追劇、補眠']]]
+  ['你什麼時候最容易嘴饞？', [['E', '工作或家務忙到累的時候'], ['E', '下午或宵夜時段，嘴巴就是想動'], ['H', '真的肚子餓、胃在叫的時候'], ['H', '上一餐沒吃飽，過一兩個小時就餓了']]],
+  ['你平常的一天比較像？', [['OA', '三餐準時，下班會去運動'], ['OQ', '三餐準時，下班就回家休息'], ['BA', '忙到常忘了吃飯，整天跑來跑去'], ['BQ', '忙到常忘了吃飯，大多坐著']]],
+  ['下午三點，你最可能在做什麼？', [['ES', '壓力好大，想來杯手搖或吃塊蛋糕'], ['ER', '心情很煩，想吃碗麵或鹹酥雞'], ['HS', '真的餓了，先拿塊餅乾墊胃'], ['HR', '真的餓了，去超商買個飯糰']]],
+  ['過去一個月，你每週運動幾次？', [['A', '3次以上'], ['A', '2次'], ['Q', '1次'], ['Q', '幾乎沒有']], '指持續30分鐘以上的運動，例如快走、瑜珈、重訓、游泳。'],
+  ['如果只能留一樣，你會留？', [['S', '手搖飲'], ['S', '甜點蛋糕'], ['R', '白飯'], ['R', '麵食']]],
+  ['放假的一天，你通常怎麼過？', [['OA', '照平常時間吃飯，出門走走或運動'], ['OQ', '照平常時間吃飯，在家追劇休息'], ['BA', '睡到自然醒，早午餐併一餐，下午出門跑行程'], ['BQ', '睡到自然醒，三餐亂吃，整天待在家']]],
+  ['晚上十點，突然有點想吃東西，你會？', [['ES', '心情不好，點杯珍奶或甜點外送'], ['ER', '壓力很大，泡碗泡麵或叫鹹酥雞'], ['HS', '晚餐沒吃飽，吃幾片餅乾或水果'], ['HR', '晚餐沒吃飽，煮幾顆水餃或一碗麵']]],
+  ['你的晚餐通常幾點吃？', [['O', '6–7點，時間很固定'], ['O', '7–8點，大致固定'], ['B', '常常超過8點才吃'], ['B', '時間不一定，有時乾脆跳過']]]
 ];
-const ORDER = [0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11];
+const NQ = QUIZ.length;
 
 const TYPES = {
   ESOA: ['海豚', '練完要來塊蛋糕的獎勵派', '你有運動的好習慣，壓力一大就想用甜點犒賞自己。', '運動後先補充蛋白質，想吃甜的時候，拿一根大豆棒代替蛋糕。', ['soybar', 'burn']],
@@ -118,11 +114,11 @@ const TYPES = {
   HSOA: ['企鵝', '流完汗就想吃冰的消暑派', '愛動也愛甜，運動完特別想來點冰涼甜的。', '運動後優先補充蛋白質，冰品選小份就好。', ['soybar', 'burn']],
   HSOQ: ['無尾熊', '飯後不吃甜就不完整的收尾控', '三餐準時，但每一餐都需要一個甜甜的句點。', '飯後的甜點，就用一根大豆棒收尾。', ['soybar']],
   HSBA: ['松鼠', '包包裡永遠有糖果的陀螺', '轉個不停，常常餓了才發現還沒吃飯。', '把包包裡的糖果換成一根大豆棒，餓的時候先吃它。', ['soybar', 'meal', 'burn']],
-  HSBQ: ['倉鼠', '忘了吃飯、一餓就開餅乾的空腹族', '忙起來就忘了吃，餓過頭就隨手抓餅乾。', '正餐不要跳過，來不及吃就先喝一份代餐。', ['soybar', 'meal']],
+  HSBQ: ['倉鼠', '忘了吃飯、一餓就開餅乾的空腹族', '忙起來就忘了吃，餓過頭就隨手抓餅乾。', '正餐不要跳過，來不及吃就先來一份高纖複方蛋白餐。', ['soybar', 'meal']],
   EROA: ['台灣黑熊', '壓力越大越想吃滷肉飯的拚命派', '認真生活也認真運動，壓力一來最想吃一碗飯。', '先吃菜和肉，飯留到最後。', ['carb', 'burn']],
   EROQ: ['水豚', '心情不好就要一碗牛肉麵的療癒胃', '生活規律，心情就靠一碗熱騰騰的麵來安慰。', '麵多加一份燙青菜，白飯可以換成半碗糙米或地瓜。', ['carb']],
   ERBA: ['獵豹', '邊開車邊吞飯糰的趕場族', '行程滿檔，三餐常常在移動中解決。', '飯糰搭配一瓶無糖豆漿，飽足感更持久。', ['carb', 'meal', 'burn']],
-  ERBQ: ['貓頭鷹', '深夜煮泡麵的夜貓子', '白天太忙，夜深了才想好好吃點東西。', '宵夜換成一份蛋白代餐。', ['carb', 'meal']],
+  ERBQ: ['貓頭鷹', '深夜煮泡麵的夜貓子', '白天太忙，夜深了才想好好吃點東西。', '宵夜換成一份高纖複方蛋白餐。', ['carb', 'meal']],
   HROA: ['柴犬', '便當一定要大碗的活力派', '活動量大、胃口也好，一定要吃飽才有力氣。', '吃到七分飽就停，運動日再多補一點碳水。', ['carb', 'burn']],
   HROQ: ['台灣水牛', '準時開飯的台式胃', '三餐準時、白飯不能少，標準的台式胃。', '外食時主動跟店家說飯量減半。', ['carb']],
   HRBA: ['狐狸', '一碗麵解決一餐的效率派', '時間就是一切，一碗麵最快最方便。', '麵加一份燙青菜和一顆滷蛋。', ['carb', 'meal', 'burn']],
@@ -131,13 +127,13 @@ const TYPES = {
 const PRODUCTS = {
   carb: ['碳水對策', '陪你好好享受每一碗飯'],
   soybar: ['大豆棒', '想吃甜的時候，對自己好一點'],
-  meal: ['蛋白代餐', '忙碌的日子，你也值得好好吃一餐'],
+  meal: ['高纖複方蛋白餐', '忙碌的日子，你也值得好好吃一餐'],
   burn: ['好燃對策', '動起來之前，給自己一點活力']
 };
 const TILES = ['HROA', 'ESBQ', 'ESOA', 'HRBQ', 'EROQ', 'ESOQ', 'HRBA', 'HSBA', 'EROA', '', 'HSOA', 'ERBA', 'HSBQ', 'HSOQ', 'ERBQ', 'ESBA'];
 const AGES = ['30歲以下', '30–34', '35–39', '40–44', '45–49', '50–55', '55歲以上'];
 const GOALS = ['體重數字', '腰腹線條', '精神體力', '飲食習慣', '產後恢復'];
-const PERSONAL = [['preg', '懷孕中、準備懷孕，或正在哺乳'], ['htn', '高血壓'], ['dm', '血糖偏高或糖尿病'], ['lipid', '血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['liver', '肝臟疾病或肝指數異常'], ['heart', '心律不整或心血管疾病'], ['caff', '喝咖啡容易心悸或失眠'], ['glp1', '正在使用減重藥物或瘦瘦針'], ['meds', '正在長期服用其他藥物'], ['allergy', '對大豆或牛奶過敏'], ['none', '以上都沒有']];
+const PERSONAL = [['preg', '懷孕中、準備懷孕，或正在哺乳'], ['htn', '高血壓'], ['dm', '血糖偏高或糖尿病'], ['lipid', '血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['liver', '肝臟疾病或肝指數異常'], ['heart', '心律不整或心血管疾病'], ['caff', '喝咖啡容易心悸或失眠'], ['glp1', '正在使用減重藥物或瘦瘦針'], ['meds', '正在長期服用其他藥物'], ['none', '以上都沒有']];
 const CHANGES = [['gain', '增加超過5公斤'], ['stable', '大致持平'], ['loss', '沒有特別減肥，卻瘦了5公斤以上']];
 const FAMILY = [['htn', '高血壓'], ['dm', '糖尿病或血糖偏高'], ['lipid', '高血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['cvd', '心臟病或中風'], ['none', '以上都沒有'], ['unknown', '不清楚']];
 
@@ -152,15 +148,16 @@ let LINE_UID = '';
 let IN_LINE = false;
 
 function fresh() {
-  return { step: 'intro', qi: 0, answers: [], age: '', height: '', weight: '', waist: '', waistUnknown: false, goals: [],
+  return { step: 'intro', qi: 0, answers: [], picks: [], age: '', height: '', weight: '', waist: '', waistUnknown: false, goals: [],
            consent: false, marketing: false, personal: [], change: '', family: [], sent: false };
 }
 let S = fresh();
 
 function esc(t) { return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function code() {
-  const a = S.answers;
-  const pick = (x, y) => (a.filter((v) => v === x).length >= 2 ? x : y);
+  const a = S.answers.join('');
+  const n = (x) => a.split(x).length - 1;
+  const pick = (x, y) => (n(x) > n(y) ? x : y);
   return pick('E', 'H') + pick('S', 'R') + pick('O', 'B') + pick('A', 'Q');
 }
 function toggle(list, id, exclusive) {
@@ -194,8 +191,6 @@ function result() {
       if (P('liver')) return ['no', '含綠茶萃取'];
       if (P('htn') || P('heart') || P('caff')) return ['no', '含咖啡因'];
     }
-    if (id === 'soybar' && P('allergy')) return ['no', '含大豆'];
-    if (id === 'meal' && P('allergy')) return ['no', '可能含大豆或乳製品'];
     if ((id === 'soybar' || id === 'meal') && P('kidney')) return ['ask'];
     if (P('preg')) return ['ask'];
     if (id === 'carb' && (P('dm') || P('glp1'))) return ['ask'];
@@ -265,17 +260,17 @@ function vIntro() {
       <h1 style="font-size:28px;line-height:1.3;font-weight:900;padding:0 4px">如果你是動物，<br>會是哪一種吃貨？</h1>
       <div class="tiles" aria-hidden="true">${tiles}</div>
     </div>
-    <p style="margin:0;font-size:17px;line-height:1.6;color:#2F3A34;text-align:center">12個生活小情境，只問你平常怎麼過。<br>結果可能跟你想的不一樣！</p>
-    <div style="display:flex;justify-content:center;gap:8px"><span class="chip">約3分鐘</span><span class="chip">12題單選</span><span class="chip">營養師團隊設計</span></div>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#2F3A34;text-align:center">8個生活小情境，只問你平常怎麼過。<br>結果可能跟你想的不一樣！</p>
+    <div style="display:flex;justify-content:center;gap:8px"><span class="chip">約2分鐘</span><span class="chip">8題單選</span><span class="chip">營養師團隊設計</span></div>
     <button type="button" class="btn" data-act="start" style="height:56px;font-size:19px">開始測驗，揭曉我的類型</button>
   </div>`;
 }
 function vQuiz() {
-  const q = QUIZ[ORDER[S.qi]];
-  const opts = q[1].map((o) => `<button type="button" class="opt ${S.answers[S.qi] === o[0] ? 'on' : ''}" data-act="pick" data-v="${o[0]}">${esc(o[1])}</button>`).join('');
+  const q = QUIZ[S.qi];
+  const opts = q[1].map((o, i) => `<button type="button" class="opt ${S.picks[S.qi] === i ? 'on' : ''}" data-act="pick" data-v="${i}">${esc(o[1])}</button>`).join('');
   return `<div class="col" style="gap:20px">
-    ${nav('quizBack', `第 ${S.qi + 1} 題／共 12 題`)}
-    <div class="bar"><i style="width:${Math.round((S.qi + 1) / 12 * 100)}%"></i></div>
+    ${nav('quizBack', `第 ${S.qi + 1} 題／共 ${NQ} 題`)}
+    <div class="bar"><i style="width:${Math.round((S.qi + 1) / NQ * 100)}%"></i></div>
     <h2 style="font-size:26px;line-height:1.45;font-weight:700">${esc(q[0])}</h2>
     ${q[2] ? `<p style="margin:0;font-size:16px;line-height:1.6;color:var(--sub);background:#fff;border-radius:12px;padding:12px 14px">${esc(q[2])}</p>` : ''}
     <div class="col" style="gap:12px">${opts}</div>
@@ -290,7 +285,7 @@ function vBody() {
   return `<div class="col" style="gap:22px">
     ${nav('backToQuiz', '最後 2 步・1／2')}
     <div style="background:var(--accent);color:#fff;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
-      <span style="font-size:18px;font-weight:700">12題完成！</span>
+      <span style="font-size:18px;font-weight:700">8題完成！</span>
       <span style="font-size:16px;line-height:1.6">再花1分鐘，就能揭曉你的吃貨動物，還有一份專屬飲食建議。</span>
     </div>
     <h2 style="font-size:24px;font-weight:700">再填一點基本資料</h2>
@@ -405,8 +400,8 @@ document.addEventListener('click', (e) => {
   switch (el.dataset.act) {
     case 'start': S.qi = 0; go('quiz'); break;
     case 'quizBack': if (S.qi > 0) { S.qi--; render(true); } else go('intro'); break;
-    case 'pick': S.answers[S.qi] = v; if (S.qi < 11) { S.qi++; render(true); } else go('body'); break;
-    case 'backToQuiz': S.qi = 11; go('quiz'); break;
+    case 'pick': S.picks[S.qi] = +v; S.answers[S.qi] = QUIZ[S.qi][1][+v][0]; if (S.qi < NQ - 1) { S.qi++; render(true); } else go('body'); break;
+    case 'backToQuiz': S.qi = NQ - 1; go('quiz'); break;
     case 'age': S.age = v; render(); break;
     case 'goal': S.goals = toggle(S.goals, v, []); render(); break;
     case 'waistUnknown': S.waistUnknown = !S.waistUnknown; S.waist = ''; render(); break;
