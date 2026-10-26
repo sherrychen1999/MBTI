@@ -108,16 +108,16 @@ const NQ = QUIZ.length;
 
 const TYPES = {
   ESOA: ['海豚', '練完要來塊蛋糕的獎勵派', '你有運動的好習慣，壓力一大就想用甜點犒賞自己。', '運動後先補充蛋白質，想吃甜的時候，拿一根大豆棒代替蛋糕。', ['soybar', 'burn']],
-  ESOQ: ['波斯貓', '三點下午茶準時報到的OL', '生活很規律，下午的甜點時間是你的充電站。', '下午茶先吃一根大豆棒，再決定要不要點蛋糕。', ['soybar']],
+  ESOQ: ['波斯貓', '三點下午茶準時報到的OL', '生活很規律，下午的甜點時間是你的充電站。', '想吃蛋糕的下午茶，吃之前記得先來一份碳水對策，當天正餐的飯量再減一點。', ['soybar', 'carb']],
   ESBA: ['蜂鳥', '靠手搖續命的鐵人', '每天忙著跑來跑去，一杯手搖是你撐下去的動力。', '手搖改成無糖茶，再配一根大豆棒，甜的有了，熱量少很多。', ['soybar', 'meal', 'burn']],
   ESBQ: ['浣熊', '夜深人靜才開零食的療癒系', '白天忙著顧工作、顧身邊的人，夜深了才有屬於自己的零食時間。', '零食先倒進小碗，不要整包拿著吃；或直接換成一根大豆棒。', ['soybar', 'meal']],
   HSOA: ['企鵝', '流完汗就想吃冰的消暑派', '愛動也愛甜，運動完特別想來點冰涼甜的。', '運動後優先補充蛋白質，冰品選小份就好。', ['soybar', 'burn']],
-  HSOQ: ['無尾熊', '飯後不吃甜就不完整的收尾控', '三餐準時，但每一餐都需要一個甜甜的句點。', '飯後的甜點，就用一根大豆棒收尾。', ['soybar']],
+  HSOQ: ['無尾熊', '飯後不吃甜就不完整的收尾控', '三餐準時，但每一餐都需要一個甜甜的句點。', '有飯後甜點的那一餐，飯前記得先來一份碳水對策，甜點選小份就好。', ['soybar', 'carb']],
   HSBA: ['松鼠', '包包裡永遠有糖果的陀螺', '轉個不停，常常餓了才發現還沒吃飯。', '把包包裡的糖果換成一根大豆棒，餓的時候先吃它。', ['soybar', 'meal', 'burn']],
   HSBQ: ['倉鼠', '忘了吃飯、一餓就開餅乾的空腹族', '忙起來就忘了吃，餓過頭就隨手抓餅乾。', '正餐不要跳過，來不及吃就先來一份高纖複方蛋白餐。', ['soybar', 'meal']],
   EROA: ['台灣黑熊', '壓力越大越想吃滷肉飯的拚命派', '認真生活也認真運動，壓力一來最想吃一碗飯。', '先吃菜和肉，飯留到最後。', ['carb', 'burn']],
   EROQ: ['水豚', '心情不好就要一碗牛肉麵的療癒胃', '生活規律，心情就靠一碗熱騰騰的麵來安慰。', '麵多加一份燙青菜，白飯可以換成半碗糙米或地瓜。', ['carb']],
-  ERBA: ['獵豹', '邊開車邊吞飯糰的趕場族', '行程滿檔，三餐常常在移動中解決。', '飯糰搭配一瓶無糖豆漿，飽足感更持久。', ['carb', 'meal', 'burn']],
+  ERBA: ['獵豹', '邊開車邊吞飯糰的趕場族', '行程滿檔，三餐常常在移動中解決。', '如果想吃飯糰，記得配一杯無糖豆漿，飽足感更持久。', ['carb', 'meal', 'burn']],
   ERBQ: ['貓頭鷹', '深夜煮泡麵的夜貓子', '白天太忙，夜深了才想好好吃點東西。', '宵夜換成一份高纖複方蛋白餐。', ['carb', 'meal']],
   HROA: ['柴犬', '便當一定要大碗的活力派', '活動量大、胃口也好，一定要吃飽才有力氣。', '吃到七分飽就停，運動日再多補一點碳水。', ['carb', 'burn']],
   HROQ: ['台灣水牛', '準時開飯的台式胃', '三餐準時、白飯不能少，標準的台式胃。', '外食時主動跟店家說飯量減半。', ['carb']],
@@ -227,7 +227,20 @@ async function doShare(kind) {
   const url = shareUrl(r.c);
   const text = '我的吃貨動物是「' + r.T[0] + '」：' + r.T[1] + '！你是哪一種？';
   sendClick('share_' + kind, r);
-  if (kind === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener'); return; }
+  const msg0 = document.getElementById('shareMsg');
+  const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (kind === 'fb') {
+    if (!mobile) { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener'); return; }
+    // 手機：用系統分享選單，直接選 Facebook App，不會跳到網頁版登入頁
+    if (navigator.share) {
+      try { await navigator.share({ title: '吃貨動物測驗', text: text, url: url }); } catch (e) {}
+      return;
+    }
+    // LINE、IG 等 App 內建瀏覽器通常不支援系統分享：改成複製連結
+    try { await navigator.clipboard.writeText(text + ' ' + url); } catch (e) {}
+    if (msg0) msg0.textContent = '已複製連結！打開 Facebook App，貼到貼文或限動就能分享';
+    return;
+  }
   if (kind === 'line') { window.open('https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener'); return; }
   const msg = document.getElementById('shareMsg');
   try {
