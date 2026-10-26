@@ -7,7 +7,8 @@
 <meta name="description" content="12個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
 <meta property="og:title" content="如果你是動物，會是哪一種吃貨？｜擇木良食">
 <meta property="og:description" content="12個生活小情境，3分鐘測出你的吃貨動物。">
-<meta property="og:image" content="og.jpg">
+<meta property="og:image" content="https://sherrychen1999.github.io/MBTI/og.jpg">
+<meta property="og:url" content="https://sherrychen1999.github.io/MBTI/">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -65,9 +66,12 @@ label.lb, .lb { font-size: 17px; font-weight: 700; }
 .tag { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; flex-shrink: 0; }
 .tag.ok { background: var(--soft); color: #1E5A3C; }
 .tag.ask { background: #FBEFD9; color: #7A4B0E; }
-.dock { position: sticky; bottom: 0; padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+#dock { position: sticky; bottom: 0; z-index: 5; }
+.dock { padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); display: flex; gap: 10px; }
 .dock a { flex: 1; height: 50px; font-size: 16px; }
 .sharecard { width: 100%; border-radius: 24px; display: block; }
+.share { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.share button { height: 46px; border: 0; border-radius: 23px; color: #fff; font-size: 15px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -85,6 +89,7 @@ const CONFIG = {
   BOOK_URL: '#',    // 門診預約網址
   SHOP_URL: '#',    // 官網網址；也可在 SHOP_BY_TYPE 為每一型指定搭配頁
   LINE_URL: 'https://line.me/R/ti/p/@selectgoodfood',
+  BASE_URL: 'https://sherrychen1999.github.io/MBTI/',  // 網站網址，分享連結會用到
   SHOP_BY_TYPE: {}  // 例如 { ESBQ: 'https://.../bundle-raccoon' }
 };
 /* =============================================================== */
@@ -140,7 +145,8 @@ const CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
 const BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
 
 const params = new URLSearchParams(location.search);
-const SRC = params.get('src') || (document.referrer ? 'referral' : 'direct');
+const FROM = TYPES[params.get('from')] ? params.get('from') : '';
+const SRC = params.get('src') || (FROM ? 'share' : (document.referrer ? 'referral' : 'direct'));
 const SESSION = Math.random().toString(36).slice(2) + Date.now().toString(36);
 let LINE_UID = '';
 let IN_LINE = false;
@@ -220,6 +226,29 @@ function sendResult(r) {
     goals: S.goals.join('、'), recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
   });
 }
+function shareUrl(c) { return CONFIG.BASE_URL + 'share_' + c + '.html'; }
+async function doShare(kind) {
+  const r = result();
+  const url = shareUrl(r.c);
+  const text = '我的吃貨動物是「' + r.T[0] + '」：' + r.T[1] + '！你是哪一種？';
+  sendClick('share_' + kind, r);
+  if (kind === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener'); return; }
+  if (kind === 'line') { window.open('https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener'); return; }
+  const msg = document.getElementById('shareMsg');
+  try {
+    if (navigator.canShare) {
+      const blob = await fetch('card_' + r.c + '.jpg').then((x) => x.blob());
+      const file = new File([blob], '我的吃貨動物_' + r.T[0] + '.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: text + ' ' + url }); return; }
+    }
+    if (navigator.share) { await navigator.share({ title: '吃貨動物測驗', text: text, url: url }); return; }
+    await navigator.clipboard.writeText(text + ' ' + url);
+    if (msg) msg.textContent = '已複製分享連結，貼給朋友吧！';
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    try { await navigator.clipboard.writeText(text + ' ' + url); if (msg) msg.textContent = '已複製分享連結，貼給朋友吧！'; } catch (e2) {}
+  }
+}
 function sendClick(btn, r) {
   send({ kind: 'click', session: SESSION, src: SRC, type: r.c, tier: r.tier, button: btn, lineUid: S.marketing ? LINE_UID : '' });
 }
@@ -232,7 +261,7 @@ function vIntro() {
   const tiles = TILES.map((t) => t ? `<div><img src="a_${t}.png" alt=""></div>` : '<div class="me">你？</div>').join('');
   return `<div class="col" style="gap:14px">
     <div style="background:var(--accent);border-radius:24px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;color:#fff">
-      <span style="font-size:14px;font-weight:700;letter-spacing:.12em;padding:0 4px">16種吃貨動物</span>
+      ${FROM ? `<span style="font-size:15px;font-weight:700;padding:0 4px">你的朋友是「${TYPES[FROM][0]}」！換你測測看 👇</span>` : '<span style="font-size:14px;font-weight:700;letter-spacing:.12em;padding:0 4px">16種吃貨動物</span>'}
       <h1 style="font-size:28px;line-height:1.3;font-weight:900;padding:0 4px">如果你是動物，<br>會是哪一種吃貨？</h1>
       <div class="tiles" aria-hidden="true">${tiles}</div>
     </div>
@@ -264,7 +293,7 @@ function vBody() {
       <span style="font-size:18px;font-weight:700">12題完成！</span>
       <span style="font-size:16px;line-height:1.6">再花1分鐘，就能揭曉你的吃貨動物，還有一份專屬飲食建議。</span>
     </div>
-    <h2 style="font-size:24px;font-weight:700">先認識一下你的身體</h2>
+    <h2 style="font-size:24px;font-weight:700">再填一點基本資料</h2>
     <div class="col" style="gap:10px"><span class="lb">年齡</span><div class="grid3">${ages}</div></div>
     <div class="grid2">
       <div class="col" style="gap:8px"><label class="lb" for="inH">身高</label><label class="field"><input id="inH" type="number" inputmode="decimal" placeholder="160" value="${esc(S.height)}" data-in="height"><span>公分</span></label></div>
@@ -285,7 +314,7 @@ function vHealth() {
   const consentBtn = (key, text) => `<button type="button" class="consent ${S[key] ? 'on' : ''}" data-act="${key}"><span class="box">${S[key] ? CHECK : ''}</span><span>${text}</span></button>`;
   return `<div class="col" style="gap:22px">
     ${nav('toBody', '最後 2 步・2／2')}
-    <h2 style="font-size:24px;font-weight:700">最後，了解一下你的健康狀況</h2>
+    <h2 style="font-size:24px;font-weight:700">最後幾個小問題，讓建議更貼近你</h2>
     <div class="card col" style="gap:12px">
       <p style="margin:0;font-size:15px;line-height:1.7;color:#3D4842">以下健康資訊只在你的手機上用來判斷哪些產品適合你，<b>不會被傳送或儲存</b>。</p>
       ${consentBtn('consent', '我了解並同意')}
@@ -321,7 +350,15 @@ function vReport() {
   return `<div class="col" style="gap:16px">
     <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
     <img class="sharecard" src="card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
-    <span style="font-size:14px;color:var(--sub);text-align:center">長按圖卡就能儲存，分享給朋友測測看</span>
+    <div class="card col" style="gap:10px;padding:16px">
+      <span style="font-size:17px;font-weight:700;text-align:center">你是${r.T[0]}！朋友會是哪一種？</span>
+      <div class="share">
+        <button type="button" data-share="fb" style="background:#1877F2">Facebook</button>
+        <button type="button" data-share="line" style="background:#06C755">LINE</button>
+        <button type="button" data-share="more" style="background:var(--accent)">更多分享</button>
+      </div>
+      <span id="shareMsg" style="font-size:13px;color:var(--sub);text-align:center">也可以長按圖卡儲存，貼到IG限動</span>
+    </div>
     <p style="margin:0;font-size:16px;line-height:1.7;color:#3D4842;text-align:center">${r.T[2]}</p>
     <div style="background:${t[3]};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:15px;font-weight:700;background:#fff;padding:5px 12px;border-radius:999px">${t[0]}</span><span style="font-size:14px;color:#2F3A34">${nums}</span></div>
@@ -358,6 +395,8 @@ function render(scrollTop) {
 function go(step) { S.step = step; render(true); }
 
 document.addEventListener('click', (e) => {
+  const sh = e.target.closest('[data-share]');
+  if (sh) { doShare(sh.dataset.share); return; }
   const link = e.target.closest('[data-click]');
   if (link) { sendClick(link.dataset.click, result()); return; }
   const el = e.target.closest('[data-act]');
