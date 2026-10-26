@@ -7,7 +7,7 @@
 <meta name="description" content="12個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
 <meta property="og:title" content="如果你是動物，會是哪一種吃貨？｜擇木良食">
 <meta property="og:description" content="12個生活小情境，3分鐘測出你的吃貨動物。">
-<meta property="og:image" content="img/og.jpg">
+<meta property="og:image" content="og.jpg">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -229,7 +229,7 @@ function nav(back, label) {
   return `<div class="nav"><button type="button" class="back" data-act="${back}" aria-label="返回">${BACK}</button><span class="muted">${label}</span><span style="width:44px"></span></div>`;
 }
 function vIntro() {
-  const tiles = TILES.map((t) => t ? `<div><img src="img/a_${t}.png" alt=""></div>` : '<div class="me">你？</div>').join('');
+  const tiles = TILES.map((t) => t ? `<div><img src="a_${t}.png" alt=""></div>` : '<div class="me">你？</div>').join('');
   return `<div class="col" style="gap:14px">
     <div style="background:var(--accent);border-radius:24px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;color:#fff">
       <span style="font-size:14px;font-weight:700;letter-spacing:.12em;padding:0 4px">16種吃貨動物</span>
@@ -320,7 +320,7 @@ function vReport() {
   const nums = 'BMI ' + r.bmi.toFixed(1) + (r.waist ? '｜腰圍 ' + r.waist + ' 公分' : '');
   return `<div class="col" style="gap:16px">
     <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
-    <img class="sharecard" src="img/card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
+    <img class="sharecard" src="card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
     <span style="font-size:14px;color:var(--sub);text-align:center">長按圖卡就能儲存，分享給朋友測測看</span>
     <p style="margin:0;font-size:16px;line-height:1.7;color:#3D4842;text-align:center">${r.T[2]}</p>
     <div style="background:${t[3]};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px">
