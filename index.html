@@ -230,7 +230,8 @@ function sendResult(r) {
     goals: S.goals.join('、'), recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
   });
 }
-function shareUrl(c, via) { return CONFIG.BASE_URL + 'share_' + c + '.html?via=' + via + (ORIG ? '&orig=' + encodeURIComponent(ORIG) : ''); }
+// 追蹤參數放在 # 後面：Facebook 會把同一型的分享視為同一個網址，預覽圖只要抓一次就會一直顯示
+function shareUrl(c, via) { return CONFIG.BASE_URL + 'share_' + c + '.html#via=' + via + (ORIG ? '&orig=' + encodeURIComponent(ORIG) : ''); }
 async function doShare(kind) {
   const r = result();
   const url = shareUrl(r.c, kind);
@@ -239,10 +240,14 @@ async function doShare(kind) {
   const msg0 = document.getElementById('shareMsg');
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (kind === 'fb') {
-    if (!mobile) { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener'); return; }
+    const sharer = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+    // 在 Facebook App 內建瀏覽器裡：已經登入，直接開 Facebook 的分享視窗，會帶縮圖
+    const inFbApp = /FBAN|FBAV|FB_IAB/i.test(navigator.userAgent);
+    if (inFbApp) { location.href = sharer; return; }
+    if (!mobile) { window.open(sharer, '_blank', 'noopener'); return; }
     // 手機：用系統分享選單，直接選 Facebook App，不會跳到網頁版登入頁
     if (navigator.share) {
-      try { await navigator.share({ title: '吃貨動物測驗', text: text, url: url }); } catch (e) {}
+      try { await navigator.share({ url: url }); } catch (e) {}
       return;
     }
     // LINE、IG 等 App 內建瀏覽器通常不支援系統分享：改成複製連結
