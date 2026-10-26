@@ -84,7 +84,7 @@ label.lb, .lb { font-size: 17px; font-weight: 700; }
 <script>
 /* ===================== 設定區：上線前填這裡 ===================== */
 const CONFIG = {
-  GAS_URL: '',      // Google Apps Script 網頁應用程式網址（https://script.google.com/macros/s/.../exec）
+  GAS_URL: 'https://script.google.com/macros/s/AKfycby_6occswdfbb9n8A7r3fksMDd_Tb19QrwwMn4-hct59ZddDtc3csT683qzI1G_naS8/exec',      // Google Apps Script 網頁應用程式網址（https://script.google.com/macros/s/.../exec）
   LIFF_ID: '',      // LIFF ID（例如 2001234567-AbCdEfGh），沒有就留空，測驗照常可用
   BOOK_URL: '#',    // 門診預約網址
   SHOP_URL: '#',    // 官網網址；也可在 SHOP_BY_TYPE 為每一型指定搭配頁
@@ -143,12 +143,14 @@ const BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke
 const params = new URLSearchParams(location.search);
 const FROM = TYPES[params.get('from')] ? params.get('from') : '';
 const SRC = params.get('src') || (FROM ? 'share' : (document.referrer ? 'referral' : 'direct'));
+const VIA = params.get('via') || '';
+const ORIG = params.get('orig') || (SRC.indexOf('share') === 0 ? '' : SRC);
 const SESSION = Math.random().toString(36).slice(2) + Date.now().toString(36);
 let LINE_UID = '';
 let IN_LINE = false;
 
 function fresh() {
-  return { step: 'intro', qi: 0, answers: [], picks: [], age: '', height: '', weight: '', waist: '', waistUnknown: false, goals: [],
+  return { step: 'intro', qi: 0, answers: [], picks: [], age: '', gender: '', hwSkip: false, height: '', weight: '', waist: '', waistUnknown: false, goals: [],
            consent: false, marketing: false, personal: [], change: '', family: [], sent: false };
 }
 let S = fresh();
@@ -165,9 +167,15 @@ function toggle(list, id, exclusive) {
   const l = list.filter((x) => !exclusive.includes(x));
   return l.includes(id) ? l.filter((x) => x !== id) : l.concat([id]);
 }
-function bodyOk() {
+function hwOk() {
   const h = parseFloat(S.height), w = parseFloat(S.weight);
-  return !!S.age && h >= 100 && h <= 220 && w >= 30 && w <= 200;
+  return S.hwSkip || (h >= 100 && h <= 220 && w >= 30 && w <= 200);
+}
+function bodyOk() { return !!S.gender && !!S.age && hwOk(); }
+function bodyHint() {
+  if (bodyOk()) return '下一步';
+  if (!S.gender || !S.age) return '選好性別和年齡就能繼續';
+  return '填好身高體重，或選「不想填」';
 }
 function healthOk() { return S.consent && S.personal.length > 0 && !!S.change && S.family.length > 0; }
 
@@ -175,10 +183,11 @@ function result() {
   const c = code(), T = TYPES[c];
   const P = (id) => S.personal.includes(id);
   const h = parseFloat(S.height), w = parseFloat(S.weight);
-  const bmi = w / Math.pow(h / 100, 2);
+  const bmi = S.hwSkip ? 0 : w / Math.pow(h / 100, 2);
   const waist = S.waistUnknown ? 0 : parseFloat(S.waist) || 0;
   const famRisk = ['htn', 'dm', 'lipid', 'kidney', 'cvd'].some((x) => S.family.includes(x));
-  const bigWaist = waist >= 80;
+  const waistLimit = S.gender === 'M' ? 90 : 80;
+  const bigWaist = waist >= waistLimit;
   const escort = P('htn') || P('heart') || P('dm') || P('lipid') || P('kidney') || P('glp1') || bmi >= 27 || (famRisk && bigWaist) || S.change === 'loss';
   const care = !escort && (famRisk || bmi >= 24 || bigWaist || P('preg') || P('liver'));
   const tier = escort ? 'escort' : care ? 'care' : 'free';
@@ -214,17 +223,17 @@ function sendResult(r) {
   if (S.sent) return;
   S.sent = true;
   send({
-    kind: 'result', session: SESSION, src: SRC, inLine: IN_LINE,
+    kind: 'result', session: SESSION, src: SRC, via: VIA, orig: ORIG, inLine: IN_LINE,
     lineUid: S.marketing ? LINE_UID : '',
     marketing: S.marketing, type: r.c, animal: r.T[0], tier: r.tier,
-    age: S.age, bmiBand: bmiBand(r.bmi), waistOver80: r.waist ? (r.waist >= 80) : '',
+    gender: { M: '生理男', F: '生理女', X: '其他／不想透露' }[S.gender] || '', age: S.age, bmiBand: r.bmi ? bmiBand(r.bmi) : '', waistOver80: r.waist ? (r.waist >= (S.gender === 'M' ? 90 : 80)) : '',
     goals: S.goals.join('、'), recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
   });
 }
-function shareUrl(c) { return CONFIG.BASE_URL + 'share_' + c + '.html'; }
+function shareUrl(c, via) { return CONFIG.BASE_URL + 'share_' + c + '.html?via=' + via + (ORIG ? '&orig=' + encodeURIComponent(ORIG) : ''); }
 async function doShare(kind) {
   const r = result();
-  const url = shareUrl(r.c);
+  const url = shareUrl(r.c, kind);
   const text = '我的吃貨動物是「' + r.T[0] + '」：' + r.T[1] + '！你是哪一種？';
   sendClick('share_' + kind, r);
   const msg0 = document.getElementById('shareMsg');
@@ -258,7 +267,7 @@ async function doShare(kind) {
   }
 }
 function sendClick(btn, r) {
-  send({ kind: 'click', session: SESSION, src: SRC, type: r.c, tier: r.tier, button: btn, lineUid: S.marketing ? LINE_UID : '' });
+  send({ kind: 'click', session: SESSION, src: SRC, orig: ORIG, type: r.c, tier: r.tier, button: btn, lineUid: S.marketing ? LINE_UID : '' });
 }
 
 /* ---------- 畫面 ---------- */
@@ -290,11 +299,12 @@ function vQuiz() {
   </div>`;
 }
 function vBody() {
+  const genders = [['F', '生理女'], ['M', '生理男'], ['X', '其他／不想透露']].map((g) => `<button type="button" class="pill ${S.gender === g[0] ? 'on' : ''}" data-act="gender" data-v="${g[0]}">${g[1]}</button>`).join('');
   const ages = AGES.map((a) => `<button type="button" class="pill ${S.age === a ? 'on' : ''}" data-act="age" data-v="${a}">${a}</button>`).join('');
-  const goals = GOALS.map((g) => `<button type="button" class="pill ${S.goals.includes(g) ? 'on' : ''}" data-act="goal" data-v="${g}">${g}</button>`).join('');
+  const goals = GOALS.filter((g) => !(S.gender === 'M' && g === '產後恢復')).map((g) => `<button type="button" class="pill ${S.goals.includes(g) ? 'on' : ''}" data-act="goal" data-v="${g}">${g}</button>`).join('');
   const waist = S.waistUnknown
-    ? `<div class="field" style="flex:1;background:#E9EEE8;border-color:#E9EEE8"><span>不知道也沒關係</span></div><button type="button" class="pill on" data-act="waistUnknown" style="height:52px;border-radius:12px">不知道</button>`
-    : `<label class="field" style="flex:1"><input id="inWa" type="number" inputmode="decimal" placeholder="以肚臍為準" value="${esc(S.waist)}" data-in="waist"><span>公分</span></label><button type="button" class="pill" data-act="waistUnknown" style="height:52px;border-radius:12px">不知道</button>`;
+    ? `<div class="field" style="background:#E9EEE8;border-color:#E9EEE8"><span>不知道也沒關係</span></div>`
+    : `<label class="field"><input id="inWa" type="number" inputmode="decimal" placeholder="以肚臍為準" value="${esc(S.waist)}" data-in="waist"><span>公分</span></label>`;
   return `<div class="col" style="gap:22px">
     ${nav('backToQuiz', '最後 2 步・1／2')}
     <div style="background:var(--accent);color:#fff;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
@@ -302,14 +312,18 @@ function vBody() {
       <span style="font-size:16px;line-height:1.6">再花1分鐘，就能揭曉你的吃貨動物，還有一份專屬飲食建議。</span>
     </div>
     <h2 style="font-size:24px;font-weight:700">再填一點基本資料</h2>
+    <div class="col" style="gap:10px"><span class="lb">性別</span><div style="display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:8px">${genders}</div></div>
     <div class="col" style="gap:10px"><span class="lb">年齡</span><div class="grid3">${ages}</div></div>
-    <div class="grid2">
-      <div class="col" style="gap:8px"><label class="lb" for="inH">身高</label><label class="field"><input id="inH" type="number" inputmode="decimal" placeholder="160" value="${esc(S.height)}" data-in="height"><span>公分</span></label></div>
-      <div class="col" style="gap:8px"><label class="lb" for="inW">體重</label><label class="field"><input id="inW" type="number" inputmode="decimal" placeholder="58" value="${esc(S.weight)}" data-in="weight"><span>公斤</span></label></div>
+    <div class="col" style="gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between"><span class="lb">身高、體重</span><button type="button" class="pill ${S.hwSkip ? 'on' : ''}" data-act="hwSkip" style="height:40px">不想填</button></div>
+      ${S.hwSkip ? '<div class="field" style="background:#E9EEE8;border-color:#E9EEE8"><span>沒關係，跳過也能看到你的吃貨動物</span></div>' : `<div class="grid2">
+        <label class="field" aria-label="身高"><input id="inH" type="number" inputmode="decimal" placeholder="身高" value="${esc(S.height)}" data-in="height"><span>公分</span></label>
+        <label class="field" aria-label="體重"><input id="inW" type="number" inputmode="decimal" placeholder="體重" value="${esc(S.weight)}" data-in="weight"><span>公斤</span></label>
+      </div>`}
     </div>
-    <div class="col" style="gap:8px"><label class="lb" for="inWa">腰圍</label><div style="display:flex;gap:8px;align-items:center">${waist}</div></div>
+    <div class="col" style="gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><label class="lb" for="inWa">腰圍</label><button type="button" class="pill ${S.waistUnknown ? 'on' : ''}" data-act="waistUnknown" style="height:40px">不知道</button></div>${waist}</div>
     <div class="col" style="gap:10px"><span class="lb">現在最想調整的是？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span><div class="wrap">${goals}</div></div>
-    <button type="button" class="btn" id="bodyNext" data-act="toHealth" ${bodyOk() ? '' : 'disabled'}>${bodyOk() ? '下一步' : '填好年齡、身高、體重就能繼續'}</button>
+    <button type="button" class="btn" id="bodyNext" data-act="toHealth" ${bodyOk() ? '' : 'disabled'}>${bodyHint()}</button>
   </div>`;
 }
 function checks(list, sel, act, radio) {
@@ -328,7 +342,7 @@ function vHealth() {
       ${consentBtn('consent', '我了解並同意')}
     </div>
     ${S.consent ? `
-    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你目前有以下哪些狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(PERSONAL, S.personal, 'personal')}</div>
+    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你目前有以下哪些狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(PERSONAL.filter((x) => !(S.gender === 'M' && x[0] === 'preg')), S.personal, 'personal')}</div>
     <div class="col" style="gap:10px"><span class="lb">過去半年，體重有沒有明顯變化？</span>${checks(CHANGES, S.change, 'change', true)}</div>
     <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你的父母或兄弟姊妹，有沒有以下狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(FAMILY, S.family, 'family')}</div>
     <div class="card col" style="gap:8px">
@@ -354,7 +368,7 @@ function vReport() {
   const recs = r.recs.map((x) => `<div class="rec"><div class="col" style="gap:2px;min-width:0"><span style="font-size:18px;font-weight:700">${PRODUCTS[x.id][0]}</span><span style="font-size:15px;color:var(--accent)">${PRODUCTS[x.id][1]}</span></div>${x.j[0] === 'ok' ? '<span class="tag ok">適合你</span>' : '<span class="tag ask">先諮詢</span>'}</div>`).join('');
   const hasAsk = r.recs.some((x) => x.j[0] === 'ask');
   const excl = r.excluded.map((x) => `${PRODUCTS[x.id][0]}（${x.j[1]}）`).join('、');
-  const nums = 'BMI ' + r.bmi.toFixed(1) + (r.waist ? '｜腰圍 ' + r.waist + ' 公分' : '');
+  const nums = [r.bmi ? 'BMI ' + r.bmi.toFixed(1) : '', r.waist ? '腰圍 ' + r.waist + ' 公分' : ''].filter(Boolean).join('｜');
   return `<div class="col" style="gap:16px">
     <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
     <img class="sharecard" src="card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
@@ -417,6 +431,8 @@ document.addEventListener('click', (e) => {
     case 'backToQuiz': S.qi = NQ - 1; go('quiz'); break;
     case 'age': S.age = v; render(); break;
     case 'goal': S.goals = toggle(S.goals, v, []); render(); break;
+    case 'gender': S.gender = v; if (v === 'M') { S.goals = S.goals.filter((g) => g !== '產後恢復'); S.personal = S.personal.filter((x) => x !== 'preg'); } render(); break;
+    case 'hwSkip': S.hwSkip = !S.hwSkip; S.height = ''; S.weight = ''; render(); break;
     case 'waistUnknown': S.waistUnknown = !S.waistUnknown; S.waist = ''; render(); break;
     case 'toHealth': if (bodyOk()) go('health'); break;
     case 'toBody': go('body'); break;
@@ -434,7 +450,7 @@ document.addEventListener('input', (e) => {
   if (!k) return;
   S[k] = e.target.value;
   const b = document.getElementById('bodyNext');
-  if (b) { const ok = bodyOk(); b.disabled = !ok; b.textContent = ok ? '下一步' : '填好年齡、身高、體重就能繼續'; }
+  if (b) { const ok = bodyOk(); b.disabled = !ok; b.textContent = bodyHint(); }
 });
 
 /* ---------- LINE（LIFF）---------- */
