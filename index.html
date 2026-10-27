@@ -242,13 +242,19 @@ async function doShare(kind) {
   const msg0 = document.getElementById('shareMsg');
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (kind === 'fb') {
-    // Facebook 分享對話框：手機會直接喚起 FB App（iOS／Android），電腦開小視窗，都會帶動物縮圖
-    const back = CONFIG.BASE_URL + '?shared=1&src=' + encodeURIComponent(SRC);
-    const dlg = 'https://www.facebook.com/dialog/share?app_id=' + CONFIG.FB_APP_ID + '&display=' + (mobile ? 'touch' : 'popup') +
-      '&href=' + encodeURIComponent(url) + '&redirect_uri=' + encodeURIComponent(back);
-    if (mobile) { location.href = dlg; return; }
-    const w = window.open(dlg, 'fbshare', 'width=640,height=520');
-    if (!w) location.href = dlg;
+    const sharer = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+    const inFbApp = /FBAN|FBAV|FB_IAB/i.test(navigator.userAgent);
+    // 已經在 Facebook App 裡：直接開分享頁（已登入）
+    if (inFbApp) { location.href = sharer; return; }
+    if (mobile) {
+      // 手機：用 fb:// 喚起 Facebook App，在 App 裡開分享頁（LINE／Safari 會問「要開啟 Facebook 嗎？」）
+      if (msg0) msg0.innerHTML = '沒有跳出 Facebook？<a href="' + sharer + '" target="_blank" rel="noopener" style="color:#1877F2;font-weight:700">改用網頁版分享</a>';
+      location.href = 'fb://facewebmodal/f?href=' + encodeURIComponent(sharer);
+      return;
+    }
+    // 電腦：開 Facebook 分享小視窗
+    const w = window.open(sharer, 'fbshare', 'width=640,height=520');
+    if (!w) location.href = sharer;
     return;
   }
   if (kind === 'line') { window.open('https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener'); return; }
