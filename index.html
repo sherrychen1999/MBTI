@@ -71,7 +71,7 @@ label.lb, .lb { font-size: 17px; font-weight: 700; }
 .dock a { flex: 1; height: 50px; font-size: 16px; }
 .sharecard { width: 100%; border-radius: 24px; display: block; }
 .share { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.share button { height: 46px; border: 0; border-radius: 23px; color: #fff; font-size: 15px; font-weight: 700; }
+.share button, .share a { height: 46px; border: 0; border-radius: 23px; color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -218,7 +218,7 @@ function bmiBand(b) { return b < 18.5 ? '<18.5' : b < 24 ? '18.5-24' : b < 27 ? 
 function send(payload) {
   if (!CONFIG.GAS_URL) return;
   try {
-    fetch(CONFIG.GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+    fetch(CONFIG.GAS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
   } catch (e) { /* 送不出去也不影響測驗 */ }
 }
 function sendResult(r) {
@@ -242,19 +242,10 @@ async function doShare(kind) {
   const msg0 = document.getElementById('shareMsg');
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (kind === 'fb') {
+    // Facebook 按鈕本身就是連到 facebook.com/sharer 的真實連結：
+    // 手機（iOS／Android）由系統直接開 Facebook App 的分享視窗；電腦才在這裡開小視窗
     const sharer = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
-    const inFbApp = /FBAN|FBAV|FB_IAB/i.test(navigator.userAgent);
-    // 已經在 Facebook App 裡：直接開分享頁（已登入）
-    if (inFbApp) { location.href = sharer; return; }
-    if (mobile) {
-      // 手機：用 fb:// 喚起 Facebook App，在 App 裡開分享頁（LINE／Safari 會問「要開啟 Facebook 嗎？」）
-      if (msg0) msg0.innerHTML = '沒有跳出 Facebook？<a href="' + sharer + '" target="_blank" rel="noopener" style="color:#1877F2;font-weight:700">改用網頁版分享</a>';
-      location.href = 'fb://facewebmodal/f?href=' + encodeURIComponent(sharer);
-      return;
-    }
-    // 電腦：開 Facebook 分享小視窗
-    const w = window.open(sharer, 'fbshare', 'width=640,height=520');
-    if (!w) location.href = sharer;
+    if (!mobile) { const w = window.open(sharer, 'fbshare', 'width=640,height=520'); if (!w) location.href = sharer; }
     return;
   }
   if (kind === 'line') { window.open('https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener'); return; }
@@ -382,7 +373,7 @@ function vReport() {
     <div class="card col" style="gap:10px;padding:16px">
       <span style="font-size:17px;font-weight:700;text-align:center">你是${r.T[0]}！朋友會是哪一種？</span>
       <div class="share">
-        <button type="button" data-share="fb" style="background:#1877F2">Facebook</button>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl(r.c, 'fb'))}" data-share="fb" style="background:#1877F2">Facebook</a>
         <button type="button" data-share="line" style="background:#06C755">LINE</button>
         <button type="button" data-share="more" style="background:var(--accent)">更多分享</button>
       </div>
@@ -425,7 +416,7 @@ function go(step) { S.step = step; render(true); }
 
 document.addEventListener('click', (e) => {
   const sh = e.target.closest('[data-share]');
-  if (sh) { doShare(sh.dataset.share); return; }
+  if (sh) { if (sh.dataset.share === 'fb' && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) e.preventDefault(); doShare(sh.dataset.share); return; }
   const link = e.target.closest('[data-click]');
   if (link) { sendClick(link.dataset.click, result()); return; }
   const el = e.target.closest('[data-act]');
