@@ -132,11 +132,6 @@ const PRODUCTS = {
   burn: ['好燃對策', '動起來之前，給自己一點活力']
 };
 const TILES = ['HROA', 'ESBQ', 'ESOA', 'HRBQ', 'EROQ', 'ESOQ', 'HRBA', 'HSBA', 'EROA', '', 'HSOA', 'ERBA', 'HSBQ', 'HSOQ', 'ERBQ', 'ESBA'];
-const AGES = ['30歲以下', '30–34', '35–39', '40–44', '45–49', '50–55', '55歲以上'];
-const GOALS = ['體重數字', '腰腹線條', '精神體力', '飲食習慣', '產後恢復'];
-const PERSONAL = [['preg', '懷孕中、準備懷孕，或正在哺乳'], ['htn', '高血壓'], ['dm', '血糖偏高或糖尿病'], ['lipid', '血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['liver', '肝臟疾病或肝指數異常'], ['heart', '心律不整或心血管疾病'], ['caff', '喝咖啡容易心悸或失眠'], ['glp1', '正在使用減重藥物或瘦瘦針'], ['meds', '正在長期服用其他藥物'], ['none', '以上都沒有']];
-const CHANGES = [['gain', '增加超過5公斤'], ['stable', '大致持平'], ['loss', '沒有特別減肥，卻瘦了5公斤以上']];
-const FAMILY = [['htn', '高血壓'], ['dm', '糖尿病或血糖偏高'], ['lipid', '高血脂或膽固醇偏高'], ['kidney', '腎臟疾病'], ['cvd', '心臟病或中風'], ['none', '以上都沒有'], ['unknown', '不清楚']];
 
 const CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 const BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
@@ -152,8 +147,7 @@ let LINE_UID = '';
 let IN_LINE = false;
 
 function fresh() {
-  return { step: 'intro', qi: 0, answers: [], picks: [], age: '', gender: '', hwSkip: false, height: '', weight: '', waist: '', waistUnknown: false, goals: [],
-           consent: false, marketing: false, personal: [], change: '', family: [], sent: false };
+  return { step: 'intro', qi: 0, answers: [], picks: [], sent: false };
 }
 let S = fresh();
 
@@ -169,52 +163,15 @@ function toggle(list, id, exclusive) {
   const l = list.filter((x) => !exclusive.includes(x));
   return l.includes(id) ? l.filter((x) => x !== id) : l.concat([id]);
 }
-function hwOk() {
-  const h = parseFloat(S.height), w = parseFloat(S.weight);
-  return S.hwSkip || (h >= 100 && h <= 220 && w >= 30 && w <= 200);
-}
-function bodyOk() { return !!S.gender && !!S.age && hwOk(); }
-function bodyHint() {
-  if (bodyOk()) return '下一步';
-  if (!S.gender || !S.age) return '選好性別和年齡就能繼續';
-  return '填好身高體重，或選「不想填」';
-}
-function healthOk() { return S.consent && S.personal.length > 0 && !!S.change && S.family.length > 0; }
 
 function result() {
   const c = code(), T = TYPES[c];
-  const P = (id) => S.personal.includes(id);
-  const h = parseFloat(S.height), w = parseFloat(S.weight);
-  const bmi = S.hwSkip ? 0 : w / Math.pow(h / 100, 2);
-  const waist = S.waistUnknown ? 0 : parseFloat(S.waist) || 0;
-  const famRisk = ['htn', 'dm', 'lipid', 'kidney', 'cvd'].some((x) => S.family.includes(x));
-  const waistLimit = S.gender === 'M' ? 90 : 80;
-  const bigWaist = waist >= waistLimit;
-  const escort = P('htn') || P('heart') || P('dm') || P('lipid') || P('kidney') || P('glp1') || bmi >= 27 || (famRisk && bigWaist) || S.change === 'loss';
-  const care = !escort && (famRisk || bmi >= 24 || bigWaist || P('preg') || P('liver'));
-  const tier = escort ? 'escort' : care ? 'care' : 'free';
   let list = T[4].slice();
-  if (P('glp1')) list = ['meal'].concat(list.filter((x) => x !== 'meal'));
   if (!list.includes('meal')) list.push('meal');
-  const judge = (id) => {
-    if (id === 'burn') {
-      if (P('preg')) return ['no', '含咖啡因'];
-      if (P('liver')) return ['no', '含綠茶萃取'];
-      if (P('htn') || P('heart') || P('caff')) return ['no', '含咖啡因'];
-    }
-    if ((id === 'soybar' || id === 'meal') && P('kidney')) return ['ask'];
-    if (P('preg')) return ['ask'];
-    if (id === 'carb' && (P('dm') || P('glp1'))) return ['ask'];
-    if (P('meds')) return ['ask'];
-    if (escort) return ['ask'];
-    return ['ok'];
-  };
-  const judged = list.map((id) => ({ id, j: judge(id) }));
-  return { c, T, bmi, waist, tier, recs: judged.filter((x) => x.j[0] !== 'no'), excluded: judged.filter((x) => x.j[0] === 'no') };
+  return { c, T, recs: list.map((id) => ({ id, j: ['ok'] })) };
 }
 
 /* ---------- 資料送出 ---------- */
-function bmiBand(b) { return b < 18.5 ? '<18.5' : b < 24 ? '18.5-24' : b < 27 ? '24-27' : '27+'; }
 function send(payload) {
   if (!CONFIG.GAS_URL) return;
   try {
@@ -226,10 +183,9 @@ function sendResult(r) {
   S.sent = true;
   send({
     kind: 'result', session: SESSION, src: SRC, via: VIA, orig: ORIG, inLine: IN_LINE,
-    lineUid: S.marketing ? LINE_UID : '',
-    marketing: S.marketing, type: r.c, animal: r.T[0], tier: r.tier,
-    gender: { M: '生理男', F: '生理女', X: '其他／不想透露' }[S.gender] || '', age: S.age, bmiBand: r.bmi ? bmiBand(r.bmi) : '', waistOver80: r.waist ? (r.waist >= (S.gender === 'M' ? 90 : 80)) : '',
-    goals: S.goals.join('、'), recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
+    lineUid: '', marketing: false, type: r.c, animal: r.T[0], tier: '',
+    gender: '', age: '', bmiBand: '', waistOver80: '', goals: '',
+    recs: r.recs.map((x) => PRODUCTS[x.id][0]).join('、')
   });
 }
 // 追蹤參數放在 # 後面：Facebook 會把同一型的分享視為同一個網址，預覽圖只要抓一次就會一直顯示
@@ -265,7 +221,7 @@ async function doShare(kind) {
   }
 }
 function sendClick(btn, r) {
-  send({ kind: 'click', session: SESSION, src: SRC, orig: ORIG, type: r.c, tier: r.tier, button: btn, lineUid: S.marketing ? LINE_UID : '' });
+  send({ kind: 'click', session: SESSION, src: SRC, orig: ORIG, type: r.c, tier: '', button: btn, lineUid: '' });
 }
 
 /* ---------- 畫面 ---------- */
@@ -296,65 +252,6 @@ function vQuiz() {
     <div class="col" style="gap:12px">${opts}</div>
   </div>`;
 }
-function vBody() {
-  const genders = [['F', '生理女'], ['M', '生理男'], ['X', '其他／不想透露']].map((g) => `<button type="button" class="pill ${S.gender === g[0] ? 'on' : ''}" data-act="gender" data-v="${g[0]}">${g[1]}</button>`).join('');
-  const ages = AGES.map((a) => `<button type="button" class="pill ${S.age === a ? 'on' : ''}" data-act="age" data-v="${a}">${a}</button>`).join('');
-  const goals = GOALS.filter((g) => !(S.gender === 'M' && g === '產後恢復')).map((g) => `<button type="button" class="pill ${S.goals.includes(g) ? 'on' : ''}" data-act="goal" data-v="${g}">${g}</button>`).join('');
-  const waist = S.waistUnknown
-    ? `<div class="field" style="background:#E9EEE8;border-color:#E9EEE8"><span>不知道也沒關係</span></div>`
-    : `<label class="field"><input id="inWa" type="number" inputmode="decimal" placeholder="以肚臍為準" value="${esc(S.waist)}" data-in="waist"><span>公分</span></label>`;
-  return `<div class="col" style="gap:22px">
-    ${nav('backToQuiz', '最後 2 步・1／2')}
-    <div style="background:var(--accent);color:#fff;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
-      <span style="font-size:18px;font-weight:700">8題完成！</span>
-      <span style="font-size:16px;line-height:1.6">再花1分鐘，就能揭曉你的吃貨動物，還有一份專屬飲食建議。</span>
-    </div>
-    <h2 style="font-size:24px;font-weight:700">再填一點基本資料</h2>
-    <div class="col" style="gap:10px"><span class="lb">性別</span><div style="display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:8px">${genders}</div></div>
-    <div class="col" style="gap:10px"><span class="lb">年齡</span><div class="grid3">${ages}</div></div>
-    <div class="col" style="gap:8px">
-      <div style="display:flex;align-items:center;justify-content:space-between"><span class="lb">身高、體重</span><button type="button" class="pill ${S.hwSkip ? 'on' : ''}" data-act="hwSkip" style="height:40px">不想填</button></div>
-      ${S.hwSkip ? '<div class="field" style="background:#E9EEE8;border-color:#E9EEE8"><span>沒關係，跳過也能看到你的吃貨動物</span></div>' : `<div class="grid2">
-        <label class="field" aria-label="身高"><input id="inH" type="number" inputmode="decimal" placeholder="身高" value="${esc(S.height)}" data-in="height"><span>公分</span></label>
-        <label class="field" aria-label="體重"><input id="inW" type="number" inputmode="decimal" placeholder="體重" value="${esc(S.weight)}" data-in="weight"><span>公斤</span></label>
-      </div>`}
-    </div>
-    <div class="col" style="gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><label class="lb" for="inWa">腰圍</label><button type="button" class="pill ${S.waistUnknown ? 'on' : ''}" data-act="waistUnknown" style="height:40px">不知道</button></div>${waist}</div>
-    <div class="col" style="gap:10px"><span class="lb">現在最想調整的是？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span><div class="wrap">${goals}</div></div>
-    <button type="button" class="btn" id="bodyNext" data-act="toHealth" ${bodyOk() ? '' : 'disabled'}>${bodyHint()}</button>
-  </div>`;
-}
-function checks(list, sel, act, radio) {
-  return list.map((p) => {
-    const on = radio ? sel === p[0] : sel.includes(p[0]);
-    return `<button type="button" class="check ${radio ? 'radio' : ''} ${on ? 'on' : ''}" data-act="${act}" data-v="${p[0]}"><span class="box">${on && !radio ? CHECK : ''}</span><span>${esc(p[1])}</span></button>`;
-  }).join('');
-}
-function vHealth() {
-  const consentBtn = (key, text) => `<button type="button" class="consent ${S[key] ? 'on' : ''}" data-act="${key}"><span class="box">${S[key] ? CHECK : ''}</span><span>${text}</span></button>`;
-  return `<div class="col" style="gap:22px">
-    ${nav('toBody', '最後 2 步・2／2')}
-    <h2 style="font-size:24px;font-weight:700">最後幾個小問題，讓建議更貼近你</h2>
-    <div class="card col" style="gap:12px">
-      <p style="margin:0;font-size:15px;line-height:1.7;color:#3D4842">以下健康資訊只在你的手機上用來判斷哪些產品適合你，<b>不會被傳送或儲存</b>。</p>
-      ${consentBtn('consent', '我了解並同意')}
-    </div>
-    ${S.consent ? `
-    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你目前有以下哪些狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(PERSONAL.filter((x) => !(S.gender === 'M' && x[0] === 'preg')), S.personal, 'personal')}</div>
-    <div class="col" style="gap:10px"><span class="lb">過去半年，體重有沒有明顯變化？</span>${checks(CHANGES, S.change, 'change', true)}</div>
-    <div class="col" style="gap:10px"><span class="lb" style="line-height:1.5">你的父母或兄弟姊妹，有沒有以下狀況？<span style="font-weight:400;color:var(--sub)">（可複選）</span></span>${checks(FAMILY, S.family, 'family')}</div>
-    <div class="card col" style="gap:8px">
-      ${consentBtn('marketing', '我願意收到擇木良食依我的吃貨類型提供的飲食資訊與優惠（選填）')}
-      <span style="font-size:13px;line-height:1.6;color:var(--sub)">勾選後，我們會保存你的類型、年齡區間等測驗結果${IN_LINE ? '與LINE帳號識別碼' : ''}，不含任何健康狀況。可隨時在LINE取消。</span>
-    </div>` : ''}
-    <button type="button" class="btn" data-act="toReport" ${healthOk() ? '' : 'disabled'}>${healthOk() ? '揭曉我的吃貨動物' : '勾選同意並回答三題後就能看結果'}</button>
-  </div>`;
-}
-const TIERS = {
-  escort: ['專人陪伴型', '你已經很照顧自己了', '由醫師和營養師一起幫你量身規劃，會更安心、也更有效率。三樹、土城院區有體重管理門診。', '#E4ECF7', [['預約門診', 'book'], ['LINE問營養師', 'line']]],
-  care: ['加強照顧型', '謝謝你願意認真了解自己', '提早有人陪你規劃飲食，會走得更輕鬆。先跟營養師聊聊吧！', '#FBEFD9', [['加LINE問營養師', 'line'], ['看我的專屬搭配', 'shop']]],
-  free: ['自在保養型', '你的狀態很不錯！', '保持現在的好習慣，再搭配適合你的小夥伴就很夠了。', '#E3F0E7', [['看我的專屬搭配', 'shop'], ['加LINE問營養師', 'line']]]
-};
 function href(kind, c) {
   if (kind === 'book') return CONFIG.BOOK_URL;
   if (kind === 'line') return CONFIG.LINE_URL;
@@ -362,11 +259,8 @@ function href(kind, c) {
   return u === '#' ? u : u + (u.includes('?') ? '&' : '?') + 'utm_source=quiz&utm_medium=' + encodeURIComponent(SRC) + '&utm_campaign=' + c;
 }
 function vReport() {
-  const r = result(), t = TIERS[r.tier];
-  const recs = r.recs.map((x) => `<div class="rec"><div class="col" style="gap:2px;min-width:0"><span style="font-size:18px;font-weight:700">${PRODUCTS[x.id][0]}</span><span style="font-size:15px;color:var(--accent)">${PRODUCTS[x.id][1]}</span></div>${x.j[0] === 'ok' ? '<span class="tag ok">適合你</span>' : '<span class="tag ask">先諮詢</span>'}</div>`).join('');
-  const hasAsk = r.recs.some((x) => x.j[0] === 'ask');
-  const excl = r.excluded.map((x) => `${PRODUCTS[x.id][0]}（${x.j[1]}）`).join('、');
-  const nums = [r.bmi ? 'BMI ' + r.bmi.toFixed(1) : '', r.waist ? '腰圍 ' + r.waist + ' 公分' : ''].filter(Boolean).join('｜');
+  const r = result();
+  const recs = r.recs.map((x) => `<div class="rec"><div class="col" style="gap:2px;min-width:0"><span style="font-size:18px;font-weight:700">${PRODUCTS[x.id][0]}</span><span style="font-size:15px;color:var(--accent)">${PRODUCTS[x.id][1]}</span></div><span class="tag ok">適合你</span></div>`).join('');
   return `<div class="col" style="gap:16px">
     <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
     <img class="sharecard" src="card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
@@ -380,32 +274,24 @@ function vReport() {
       <span id="shareMsg" style="font-size:13px;color:var(--sub);text-align:center">也可以長按圖卡儲存，貼到IG限動</span>
     </div>
     <p style="margin:0;font-size:16px;line-height:1.7;color:#3D4842;text-align:center">${r.T[2]}</p>
-    <div style="background:${t[3]};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:15px;font-weight:700;background:#fff;padding:5px 12px;border-radius:999px">${t[0]}</span><span style="font-size:14px;color:#2F3A34">${nums}</span></div>
-      <span style="font-size:20px;font-weight:700;line-height:1.45">${t[1]}</span>
-      <p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${t[2]}</p>
-      ${r.tier === 'escort' ? '<span style="font-size:14px;color:#2F3A34;text-align:center">也可以直接跟診所櫃檯預約</span>' : ''}
-    </div>
-    ${S.change === 'loss' ? '<div class="card" style="padding:12px 14px;font-size:15px;line-height:1.6;color:#2F3A34">沒有特別減肥，體重卻少了不少，建議找醫師做個檢查，安心最重要。</div>' : ''}
+    <div class="card col" style="gap:4px;padding:14px 16px;background:var(--soft);border-color:var(--soft)"><span style="font-size:16px;font-weight:700">給你的小提醒</span><p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${r.T[3]}</p></div>
     <div class="card col" style="gap:12px">
       <span style="font-size:19px;font-weight:700">今天，也好好照顧自己</span>
       ${recs}
-      ${hasAsk ? '<span style="font-size:14px;line-height:1.6;color:#7A4B0E">標示「先諮詢」的產品，建議先問營養師或醫師再開始。</span>' : ''}
-      ${excl ? `<span style="font-size:14px;line-height:1.6;color:#4A5650">先不推薦：${excl}</span>` : ''}
-      ${r.tier !== 'escort' ? '<span style="font-size:14px;color:var(--sub)">專屬搭配可以在官網找到，金鶯診所旁的合作藥局也買得到</span>' : ''}
+      <span style="font-size:14px;color:var(--sub)">專屬搭配可以在官網找到，金鶯診所旁的合作藥局也買得到</span>
+      <span style="font-size:14px;line-height:1.6;color:#7A4B0E">懷孕、哺乳、有慢性病或長期服藥的朋友，開始前請先問營養師或醫師；想找醫師一起規劃，可以<a href="${CONFIG.BOOK_URL}" target="_blank" rel="noopener" data-click="book" style="color:#7A4B0E;font-weight:700">預約門診</a>。</span>
     </div>
-    <div class="card col" style="gap:4px;padding:14px 16px"><span style="font-size:16px;font-weight:700">給你的小提醒</span><p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${r.T[3]}</p></div>
     <p style="margin:0;font-size:13px;line-height:1.6;color:var(--sub)">本測驗用於了解個人飲食與生活習慣，不能取代醫師診斷。產品皆為一般食品，請搭配均衡飲食與規律運動。</p>
     <button type="button" data-act="restart" style="align-self:center;height:44px;padding:0 16px;border:0;background:transparent;color:var(--sub);font-size:15px;text-decoration:underline">重新測驗</button>
   </div>`;
 }
 function vDock() {
   if (S.step !== 'report') return '';
-  const r = result(), t = TIERS[r.tier];
-  return `<div class="dock">${t[4].map((b, i) => `<a class="btn ${i ? 'ghost' : ''}" href="${href(b[1], r.c)}" target="_blank" rel="noopener" data-click="${b[1]}">${b[0]}</a>`).join('')}</div>`;
+  const r = result();
+  return `<div class="dock"><a class="btn" href="${href('shop', r.c)}" target="_blank" rel="noopener" data-click="shop">看我的專屬搭配</a><a class="btn ghost" href="${href('line', r.c)}" target="_blank" rel="noopener" data-click="line">加LINE問營養師</a></div>`;
 }
 
-const VIEWS = { intro: vIntro, quiz: vQuiz, body: vBody, health: vHealth, report: vReport };
+const VIEWS = { intro: vIntro, quiz: vQuiz, report: vReport };
 function render(scrollTop) {
   document.getElementById('main').innerHTML = VIEWS[S.step]();
   document.getElementById('dock').innerHTML = vDock();
@@ -425,32 +311,10 @@ document.addEventListener('click', (e) => {
   switch (el.dataset.act) {
     case 'start': S.qi = 0; go('quiz'); break;
     case 'quizBack': if (S.qi > 0) { S.qi--; render(true); } else go('intro'); break;
-    case 'pick': S.picks[S.qi] = +v; S.answers[S.qi] = QUIZ[S.qi][1][+v][0]; if (S.qi < NQ - 1) { S.qi++; render(true); } else go('body'); break;
-    case 'backToQuiz': S.qi = NQ - 1; go('quiz'); break;
-    case 'age': S.age = v; render(); break;
-    case 'goal': S.goals = toggle(S.goals, v, []); render(); break;
-    case 'gender': S.gender = v; if (v === 'M') { S.goals = S.goals.filter((g) => g !== '產後恢復'); S.personal = S.personal.filter((x) => x !== 'preg'); } render(); break;
-    case 'hwSkip': S.hwSkip = !S.hwSkip; S.height = ''; S.weight = ''; render(); break;
-    case 'waistUnknown': S.waistUnknown = !S.waistUnknown; S.waist = ''; render(); break;
-    case 'toHealth': if (bodyOk()) go('health'); break;
-    case 'toBody': go('body'); break;
-    case 'consent': S.consent = !S.consent; render(); break;
-    case 'marketing': S.marketing = !S.marketing; render(); break;
-    case 'personal': S.personal = toggle(S.personal, v, ['none']); render(); break;
-    case 'change': S.change = v; render(); break;
-    case 'family': S.family = toggle(S.family, v, ['none', 'unknown']); render(); break;
-    case 'toReport': if (healthOk()) go('report'); break;
+    case 'pick': S.picks[S.qi] = +v; S.answers[S.qi] = QUIZ[S.qi][1][+v][0]; if (S.qi < NQ - 1) { S.qi++; render(true); } else go('report'); break;
     case 'restart': S = fresh(); go('intro'); break;
   }
 });
-document.addEventListener('input', (e) => {
-  const k = e.target.dataset.in;
-  if (!k) return;
-  S[k] = e.target.value;
-  const b = document.getElementById('bodyNext');
-  if (b) { const ok = bodyOk(); b.disabled = !ok; b.textContent = bodyHint(); }
-});
-
 /* ---------- LINE（LIFF）---------- */
 async function initLiff() {
   if (!CONFIG.LIFF_ID || !window.liff) return;
