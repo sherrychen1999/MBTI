@@ -1,1 +1,357 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>吃貨動物測驗｜擇木良食</title>
+<meta name="description" content="8個生活小情境，測出你是哪一種吃貨動物，再拿一份營養師團隊設計的專屬飲食建議。">
+<meta property="og:title" content="如果你是動物，會是哪一種吃貨？｜擇木良食">
+<meta property="og:description" content="8個生活小情境，2分鐘測出你的吃貨動物。">
+<meta property="og:image" content="https://sherrychen1999.github.io/MBTI/og.jpg">
+<meta property="og:url" content="https://sherrychen1999.github.io/MBTI/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+:root { --accent: #2E6B4F; --ink: #1F2A24; --sub: #5B6660; --line: #DCE3DC; --bg: #F2F5F1; --soft: #E3F0E7; --sel: #EAF3EE; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #E6EBE5; }
+body { font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; background: var(--bg); display: flex; flex-direction: column; }
+.top { height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff; }
+.top b { font-size: 17px; letter-spacing: .04em; color: var(--accent); }
+.top span { font-size: 15px; color: var(--sub); }
+.main { flex: 1; padding: 20px 20px 32px; }
+.col { display: flex; flex-direction: column; gap: 18px; }
+.btn { width: 100%; height: 54px; border: 0; border-radius: 27px; background: var(--accent); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.btn.ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn[disabled] { background: #C9D2CB; color: #3D4842; cursor: default; font-size: 16px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.chip { font-size: 14px; background: var(--soft); color: #1E5A3C; padding: 5px 11px; border-radius: 999px; }
+.nav { display: flex; align-items: center; justify-content: space-between; }
+.back { width: 44px; height: 44px; border-radius: 22px; border: 1px solid var(--line); background: #fff; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.muted { font-size: 16px; color: var(--sub); }
+.bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 8px; background: var(--accent); border-radius: 4px; }
+.opt { width: 100%; min-height: 68px; padding: 16px 18px; border-radius: 16px; border: 1.5px solid #D5DED6; background: #fff; text-align: left; font-size: 18px; line-height: 1.55; color: var(--ink); }
+.opt.on { border: 2px solid var(--accent); background: var(--sel); font-weight: 500; }
+h1, h2 { margin: 0; }
+label.lb, .lb { font-size: 17px; font-weight: 700; }
+.pill { height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid #D5DED6; background: #fff; font-size: 15px; color: var(--ink); }
+.pill.on { border: 2px solid var(--accent); background: var(--sel); font-weight: 700; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.field { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #D5DED6; border-radius: 12px; padding: 0 12px; height: 52px; }
+.field input { flex: 1; min-width: 0; border: 0; outline: none; font-size: 18px; background: transparent; color: var(--ink); }
+.field span { font-size: 15px; color: var(--sub); }
+.check { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #D5DED6; background: #fff; text-align: left; font-size: 16px; line-height: 1.5; color: var(--ink); }
+.check.on { border: 2px solid var(--accent); background: var(--sel); }
+.box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #8A968F; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+.on .box { background: var(--accent); border-color: var(--accent); }
+.radio .box { border-radius: 11px; }
+.on.radio .box { background: #fff; border: 6px solid var(--accent); }
+.consent { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; border: 0; background: transparent; padding: 0; font-size: 16px; font-weight: 700; color: var(--ink); text-align: left; line-height: 1.5; }
+.consent .box { margin-top: 1px; }
+.consent.on .box { background: var(--accent); border-color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.tiles div { aspect-ratio: 1; border-radius: 14px; background: #F7F4EC; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.tiles img { width: 105%; height: 105%; object-fit: cover; display: block; }
+.tiles .me { background: #fff; color: var(--accent); font-size: 22px; font-weight: 900; }
+.rec { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #E6EBE5; }
+.tag { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; flex-shrink: 0; }
+.tag.ok { background: var(--soft); color: #1E5A3C; }
+.tag.ask { background: #FBEFD9; color: #7A4B0E; }
+#dock { position: sticky; bottom: 0; z-index: 5; }
+.dock { padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.dock a { flex: 1; height: 50px; font-size: 16px; }
+.sharecard { width: 100%; border-radius: 24px; display: block; }
+.share { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.share button, .share a { height: 46px; border: 0; border-radius: 23px; color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><img src="logo.png" alt="擇木良食" style="height:32px;width:auto;display:block"><span>吃貨動物測驗</span></div>
+  <div class="main" id="main"></div>
+  <div id="dock"></div>
+</div>
 
+<script>
+/* ===================== 設定區：上線前填這裡 ===================== */
+const CONFIG = {
+  GAS_URL: 'https://script.google.com/macros/s/AKfycby_6occswdfbb9n8A7r3fksMDd_Tb19QrwwMn4-hct59ZddDtc3csT683qzI1G_naS8/exec',      // Google Apps Script 網頁應用程式網址（https://script.google.com/macros/s/.../exec）
+  LIFF_ID: '',      // LIFF ID（例如 2001234567-AbCdEfGh），沒有就留空，測驗照常可用
+  BOOK_URL: 'https://liff.line.me/2007733363-o3Ux4wSa/line.html',    // 門診預約分流頁
+  SHOP_URL: '#',    // 官網網址；也可在 SHOP_BY_TYPE 為每一型指定搭配頁
+  LINE_URL: 'https://line.me/R/ti/p/@selectgoodfood',
+  BASE_URL: 'https://sherrychen1999.github.io/MBTI/',  // 網站網址，分享連結會用到
+  SHOP_BY_TYPE: {},  // 例如 { ESBQ: 'https://.../bundle-raccoon' }
+  FB_APP_ID: '2859780134402308'  // Facebook App ID，分享到 FB 用（Meta for Developers）
+};
+/* =============================================================== */
+
+const QUIZ = [
+  ['你什麼時候最容易嘴饞？', [['E', '工作或家務忙到累的時候'], ['E', '下午或宵夜時段，嘴巴就是想動'], ['H', '真的肚子餓、胃在叫的時候'], ['H', '上一餐沒吃飽，過一兩個小時就餓了']]],
+  ['你平常的一天比較像？', [['OA', '三餐準時，下班會去運動'], ['OQ', '三餐準時，下班就回家休息'], ['BA', '忙到常忘了吃飯，整天跑來跑去'], ['BQ', '忙到常忘了吃飯，大多坐著']]],
+  ['下午三點，你最可能在做什麼？', [['ES', '壓力好大，想來杯手搖或吃塊蛋糕'], ['ER', '心情很煩，想吃碗麵或鹹酥雞'], ['HS', '真的餓了，先拿塊餅乾墊胃'], ['HR', '真的餓了，去超商買個飯糰']]],
+  ['過去一個月，你每週運動幾次？', [['A', '3次以上'], ['A', '2次'], ['Q', '1次'], ['Q', '幾乎沒有']], '指持續30分鐘以上的運動，例如快走、瑜珈、重訓、游泳。'],
+  ['如果只能留一樣，你會留？', [['S', '手搖飲'], ['S', '甜點蛋糕'], ['R', '白飯'], ['R', '麵食']]],
+  ['放假的一天，你通常怎麼過？', [['OA', '照平常時間吃飯，出門走走或運動'], ['OQ', '照平常時間吃飯，在家追劇休息'], ['BA', '睡到自然醒，早午餐併一餐，下午出門跑行程'], ['BQ', '睡到自然醒，三餐亂吃，整天待在家']]],
+  ['晚上十點，突然有點想吃東西，你會？', [['ES', '心情不好，點杯珍奶或甜點外送'], ['ER', '壓力很大，泡碗泡麵或叫鹹酥雞'], ['HS', '晚餐沒吃飽，吃幾片餅乾或水果'], ['HR', '晚餐沒吃飽，煮幾顆水餃或一碗麵']]],
+  ['你的晚餐通常幾點吃？', [['O', '6–7點，時間很固定'], ['O', '7–8點，大致固定'], ['B', '常常超過8點才吃'], ['B', '時間不一定，有時乾脆跳過']]]
+];
+const NQ = QUIZ.length;
+
+const TYPES = {
+  ESOA: ['海豚', '練完要來塊蛋糕的獎勵派', '你有運動的好習慣，壓力一大就想用甜點犒賞自己。', '運動後先補充蛋白質，想吃甜的時候，拿一根大豆棒代替蛋糕。', ['soybar', 'burn']],
+  ESOQ: ['波斯貓', '三點下午茶準時報到的OL', '生活很規律，下午的甜點時間是你的充電站。', '想吃蛋糕的下午茶，吃之前記得先來一份碳水對策，當天正餐的飯量再減一點。', ['soybar', 'carb']],
+  ESBA: ['蜂鳥', '靠手搖續命的鐵人', '每天忙著跑來跑去，一杯手搖是你撐下去的動力。', '手搖改成無糖茶，再配一根大豆棒，甜的有了，熱量少很多。', ['soybar', 'meal', 'burn']],
+  ESBQ: ['浣熊', '夜深人靜才開零食的療癒系', '白天忙著顧工作、顧身邊的人，夜深了才有屬於自己的零食時間。', '零食先倒進小碗，不要整包拿著吃；或直接換成一根大豆棒。', ['soybar', 'meal']],
+  HSOA: ['企鵝', '流完汗就想吃冰的消暑派', '愛動也愛甜，運動完特別想來點冰涼甜的。', '運動後優先補充蛋白質，冰品選小份就好。', ['soybar', 'burn']],
+  HSOQ: ['無尾熊', '飯後不吃甜就不完整的收尾控', '三餐準時，但每一餐都需要一個甜甜的句點。', '有飯後甜點的那一餐，飯前記得先來一份碳水對策，甜點選小份就好。', ['soybar', 'carb']],
+  HSBA: ['松鼠', '包包裡永遠有糖果的陀螺', '轉個不停，常常餓了才發現還沒吃飯。', '把包包裡的糖果換成一根大豆棒，餓的時候先吃它。', ['soybar', 'meal', 'burn']],
+  HSBQ: ['倉鼠', '忘了吃飯、一餓就開餅乾的空腹族', '忙起來就忘了吃，餓過頭就隨手抓餅乾。', '正餐不要跳過，來不及吃就先來一份高纖複方蛋白餐。', ['soybar', 'meal']],
+  EROA: ['台灣黑熊', '壓力越大越想吃滷肉飯的拚命派', '認真生活也認真運動，壓力一來最想吃一碗飯。', '先吃菜和肉，飯留到最後。', ['carb', 'burn']],
+  EROQ: ['水豚', '心情不好就要一碗牛肉麵的療癒胃', '生活規律，心情就靠一碗熱騰騰的麵來安慰。', '麵多加一份燙青菜，白飯可以換成半碗糙米或地瓜。', ['carb']],
+  ERBA: ['獵豹', '邊開車邊吞飯糰的趕場族', '行程滿檔，三餐常常在移動中解決。', '如果想吃飯糰，記得配一杯無糖豆漿，飽足感更持久。', ['carb', 'meal', 'burn']],
+  ERBQ: ['貓頭鷹', '深夜煮泡麵的夜貓子', '白天太忙，夜深了才想好好吃點東西。', '宵夜換成一份高纖複方蛋白餐。', ['carb', 'meal']],
+  HROA: ['柴犬', '便當一定要大碗的活力派', '活動量大、胃口也好，一定要吃飽才有力氣。', '吃到七分飽就停，運動日再多補一點碳水。', ['carb', 'burn']],
+  HROQ: ['台灣水牛', '準時開飯的台式胃', '三餐準時、白飯不能少，標準的台式胃。', '外食時主動跟店家說飯量減半。', ['carb']],
+  HRBA: ['狐狸', '一碗麵解決一餐的效率派', '時間就是一切，一碗麵最快最方便。', '麵加一份燙青菜和一顆滷蛋。', ['carb', 'meal', 'burn']],
+  HRBQ: ['獅子', '一天只吃一頓大餐的報復型吃貨', '平常沒空好好吃，一有機會就吃到十一分飽。', '吃到飽先吃蛋白質，七分飽就收手。', ['carb', 'meal']]
+};
+const DETAIL = {
+  ESOA: ["運動完的「我值得」是最容易放大份量的時刻，一塊蛋糕常常把剛消耗的熱量補回來還有剩。", ["練完先喝水、吃點蛋白質（茶葉蛋、無糖豆漿），二十分鐘後再決定要不要吃甜的", "獎勵改成「選一樣」：蛋糕或手搖，不要兩樣一起", "把獎勵從食物換成一樣：一集想看的劇、一次按摩"], "soybar", "運動後想吃甜的，一根大豆棒比蛋糕輕鬆很多。"],
+  ESOQ: ["每天固定的甜點時間，是一週七次、一個月三十次的累積，單次看不出來，三個月就看得出來。", ["下午茶改成一週三次，另外幾天用無糖茶和一小把堅果頂替", "蛋糕吃一半，另一半留給明天或同事", "午餐的飯量先減三分之一，把額度留給下午茶"], "carb", "吃蛋糕前先來一份碳水對策，當天正餐再少一點飯。"],
+  ESBA: ["忙到沒吃正餐，手搖變成主食；糖來得快去得也快，一兩個小時後更累、更想再來一杯。", ["手搖改無糖或微糖，珍珠改成椰果或不加料", "再忙也先吃一顆茶葉蛋或一根香蕉再喝飲料，血糖不會衝太快", "包包放一包無調味堅果，餓的時候先吃它"], "soybar", "手搖改無糖茶，配一根大豆棒，甜的有了，熱量少一半。"],
+  ESBQ: ["睡前的零食是一天裡最放鬆的時刻，也最容易「一包吃完」，那段熱量幾乎完全存起來。", ["零食先倒進小碗，剩下的收回櫃子，不要整包拿著吃", "晚餐吃飽一點，不要為了晚上留肚子", "睡前想吃的時候先刷牙，很多時候就不想吃了"], "soybar", "把零食櫃裡的餅乾換成大豆棒，一根就有飽足感。"],
+  HSOA: ["運動完一杯冰飲或一碗冰，糖量常常超過一整餐，而且喝得快、沒有飽足感。", ["運動完先喝冰水或無糖氣泡水，解完渴再決定要不要吃冰", "冰品選小份、少料，或改成無糖優格加水果", "運動後三十分鐘內補一份蛋白質，比補甜的更有感"], "soybar", "運動後想吃甜的，一根大豆棒剛好。"],
+  HSOQ: ["正餐已經吃飽，甜點是「多出來的」那一份，一天兩次就多出半餐。", ["飯後甜點改成一小份水果，一天只留一餐吃真正的甜點", "吃甜點的那一餐，飯量減三分之一", "吃飯放慢，飽足感上來後對甜的渴望會降低"], "carb", "有甜點的那一餐，飯前先來一份碳水對策。"],
+  HSBA: ["整天小口小口的糖果餅乾，沒有一餐吃飽，但加起來的量比一餐還多。", ["包包裡的糖果換成堅果、小黑巧克力或茶葉蛋", "一天至少安排一餐坐下來好好吃", "餓的時候先喝一杯水，等五分鐘再決定"], "soybar", "包包裡放一根大豆棒，餓了先吃它。"],
+  HSBQ: ["跳過正餐之後的那一餐會吃得又快又多，餅乾只是前菜。", ["手機設一個午餐提醒，到了就吃，不要等「忙完」", "辦公室放一些可以當正餐的東西：即食雞胸、水煮蛋、燕麥", "餓過頭時先吃蛋白質，再吃澱粉，比較不會爆量"], "meal", "來不及吃正餐，先來一份高纖複方蛋白餐頂著。"],
+  EROA: ["壓力大的時候吃得快、吃得多，一碗飯常常變兩碗，而且吃完還是不開心。", ["先吃菜和肉，飯留到最後，通常就吃不完", "壓力大時先走十分鐘再去吃飯，份量會自然減少", "滷肉飯改成滷肉配糙米飯，或多點一份燙青菜"], "carb", "吃飯前先來一份碳水對策。"],
+  EROQ: ["一碗麵湯喝完，鈉和油都超標，而且療癒感只撐一下，隔天還是想再來一碗。", ["麵多加一份燙青菜，湯喝一半就好", "白飯換成半碗糙米或地瓜", "心情不好先傳訊息給一個人，再決定要不要吃"], "carb", "吃麵前先來一份碳水對策。"],
+  ERBA: ["飯糰和麵包是純澱粉，吃完一下就餓，一天下來吃了三四次卻沒有一次是正餐。", ["飯糰配一杯無糖豆漿或一顆茶葉蛋，飽足感多撐兩小時", "超商選有蛋、有肉的：御飯糰換成三明治加沙拉", "一天至少一餐坐下來吃，哪怕只有十五分鐘"], "meal", "車上放一份高纖複方蛋白餐，趕場的那一餐就有了。"],
+  ERBQ: ["深夜那一餐幾乎不會消耗掉，而且泡麵的鈉會讓隔天水腫、更累。", ["晚餐吃飽一點，宵夜的需求會自然變小", "真的要吃泡麵：加蛋加青菜、調味包放一半、湯不要喝", "宵夜改成熱牛奶或一小碗燕麥，比較好睡"], "meal", "宵夜換成一份高纖複方蛋白餐。"],
+  HROA: ["胃口好、吃得快，常常吃到撐才停，份量跟著心情走而不是跟著活動量走。", ["吃到七分飽就停，放下筷子等五分鐘再決定要不要繼續", "便當先吃菜和肉，飯最後吃", "運動日多補一點碳水，沒運動的日子飯減三分之一"], "carb", "大碗便當前先來一份碳水對策。"],
+  HROQ: ["三餐規律是優點，但每餐的飯量固定偏多，又沒什麼活動量，長期下來慢慢累積。", ["外食主動說「飯少一點」，自己煮就把碗換小一號", "每餐多一份青菜，飯自然就少了", "飯後散步十分鐘，哪怕只是繞一圈"], "carb", "吃飯前先來一份碳水對策。"],
+  HRBA: ["一碗麵通常只有澱粉，蛋白質和青菜都不夠，吃完兩小時就餓，然後又一碗。", ["麵加一份燙青菜和一顆滷蛋，一餐就完整", "乾麵換湯麵、湯喝一半", "一週兩天把麵換成便當或自助餐"], "meal", "趕時間的那一餐，用高纖複方蛋白餐代替。"],
+  HRBQ: ["餓一整天再一次吃到十一分飽，身體會把那一餐存得特別努力。", ["白天至少吃一小餐，大餐那頓才不會失控", "吃到飽先吃蛋白質和青菜，澱粉和甜點放最後", "七分飽就收手，剩下的打包明天吃"], "meal", "白天來不及吃的那一餐，先用高纖複方蛋白餐頂著。"]
+};
+const PRODUCTS = {
+  carb: ['碳水對策', '陪你好好享受每一碗飯'],
+  soybar: ['大豆棒', '想吃甜的時候，對自己好一點'],
+  meal: ['高纖複方蛋白餐', '忙碌的日子，你也值得好好吃一餐'],
+  burn: ['好燃對策', '動起來之前，給自己一點活力']
+};
+const TILES = ['HROA', 'ESBQ', 'ESOA', 'HRBQ', 'EROQ', 'ESOQ', 'HRBA', 'HSBA', 'EROA', '', 'HSOA', 'ERBA', 'HSBQ', 'HSOQ', 'ERBQ', 'ESBA'];
+
+const CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+const BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+
+const params = new URLSearchParams(location.search);
+const FROM = TYPES[params.get('from')] ? params.get('from') : '';
+const SRC = params.get('src') || (FROM ? 'share' : (document.referrer ? 'referral' : 'direct'));
+const VIA = params.get('via') || '';
+const SHARED = params.get('shared') === '1';
+const ORIG = params.get('orig') || (SRC.indexOf('share') === 0 ? '' : SRC);
+const SESSION = Math.random().toString(36).slice(2) + Date.now().toString(36);
+let LINE_UID = '';
+let IN_LINE = false;
+
+function fresh() {
+  return { step: 'intro', qi: 0, answers: [], picks: [], sent: false };
+}
+let S = fresh();
+
+function esc(t) { return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function code() {
+  const a = S.answers.join('');
+  const n = (x) => a.split(x).length - 1;
+  const pick = (x, y) => (n(x) > n(y) ? x : y);
+  return pick('E', 'H') + pick('S', 'R') + pick('O', 'B') + pick('A', 'Q');
+}
+function toggle(list, id, exclusive) {
+  if (exclusive.includes(id)) return list.includes(id) ? [] : [id];
+  const l = list.filter((x) => !exclusive.includes(x));
+  return l.includes(id) ? l.filter((x) => x !== id) : l.concat([id]);
+}
+
+function result() {
+  const c = code(), T = TYPES[c];
+  let list = T[4].slice();
+  if (!list.includes('meal')) list.push('meal');
+  return { c, T, recs: list.map((id) => ({ id, j: ['ok'] })) };
+}
+
+/* ---------- 資料送出 ---------- */
+function send(payload) {
+  if (!CONFIG.GAS_URL) return;
+  try {
+    fetch(CONFIG.GAS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  } catch (e) { /* 送不出去也不影響測驗 */ }
+}
+function sendResult(r) {
+  if (S.sent) return;
+  S.sent = true;
+  send({
+    kind: 'result', session: SESSION, src: SRC, via: VIA, orig: ORIG, inLine: IN_LINE,
+    lineUid: '', marketing: false, type: r.c, animal: r.T[0], tier: '',
+    gender: '', age: '', bmiBand: '', waistOver80: '', goals: '',
+    recs: PRODUCTS[DETAIL[r.c][2]][0]
+  });
+}
+// 追蹤參數放在 # 後面：Facebook 會把同一型的分享視為同一個網址，預覽圖只要抓一次就會一直顯示
+function shareUrl(c, via) { return CONFIG.BASE_URL + 'share_' + c + '.html#via=' + via + (ORIG ? '&orig=' + encodeURIComponent(ORIG) : ''); }
+async function doShare(kind) {
+  const r = result();
+  const url = shareUrl(r.c, kind);
+  const text = '我的吃貨動物是「' + r.T[0] + '」：' + r.T[1] + '！你是哪一種？';
+  sendClick('share_' + kind, r);
+  const msg0 = document.getElementById('shareMsg');
+  const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (kind === 'fb') {
+    // Facebook 按鈕本身就是連到 facebook.com/sharer 的真實連結：
+    // 手機（iOS／Android）由系統直接開 Facebook App 的分享視窗；電腦才在這裡開小視窗
+    const sharer = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+    if (!mobile) { const w = window.open(sharer, 'fbshare', 'width=640,height=520'); if (!w) location.href = sharer; }
+    return;
+  }
+  if (kind === 'line') { window.open('https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener'); return; }
+  const msg = document.getElementById('shareMsg');
+  try {
+    if (navigator.canShare) {
+      const blob = await fetch('card_' + r.c + '.jpg').then((x) => x.blob());
+      const file = new File([blob], '我的吃貨動物_' + r.T[0] + '.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: text + ' ' + url }); return; }
+    }
+    if (navigator.share) { await navigator.share({ title: '吃貨動物測驗', text: text, url: url }); return; }
+    await navigator.clipboard.writeText(text + ' ' + url);
+    if (msg) msg.textContent = '已複製分享連結，貼給朋友吧！';
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    try { await navigator.clipboard.writeText(text + ' ' + url); if (msg) msg.textContent = '已複製分享連結，貼給朋友吧！'; } catch (e2) {}
+  }
+}
+function sendClick(btn, r) {
+  send({ kind: 'click', session: SESSION, src: SRC, orig: ORIG, type: r.c, tier: '', button: btn, lineUid: '' });
+}
+
+/* ---------- 畫面 ---------- */
+function nav(back, label) {
+  return `<div class="nav"><button type="button" class="back" data-act="${back}" aria-label="返回">${BACK}</button><span class="muted">${label}</span><span style="width:44px"></span></div>`;
+}
+function vIntro() {
+  const tiles = TILES.map((t) => t ? `<div><img src="a_${t}.png" alt=""></div>` : '<div class="me">你？</div>').join('');
+  return `<div class="col" style="gap:14px">
+    <div style="background:var(--accent);border-radius:24px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;color:#fff">
+      ${FROM ? `<span style="font-size:15px;font-weight:700;padding:0 4px">你的朋友是「${TYPES[FROM][0]}」！換你測測看 👇</span>` : SHARED ? '<span style="font-size:15px;font-weight:700;padding:0 4px">分享成功，謝謝你！也可以再測一次 👇</span>' : '<span style="font-size:14px;font-weight:700;letter-spacing:.12em;padding:0 4px">16種吃貨動物</span>'}
+      <h1 style="font-size:28px;line-height:1.3;font-weight:900;padding:0 4px">如果你是動物，<br>會是哪一種吃貨？</h1>
+      <div class="tiles" aria-hidden="true">${tiles}</div>
+    </div>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#2F3A34;text-align:center">8個生活小情境，只問你平常怎麼過。<br>結果可能跟你想的不一樣！</p>
+    <div style="display:flex;justify-content:center;gap:8px"><span class="chip">約2分鐘</span><span class="chip">8題單選</span><span class="chip">營養師團隊設計</span></div>
+    <button type="button" class="btn" data-act="start" style="height:56px;font-size:19px">開始測驗，揭曉我的類型</button>
+  </div>`;
+}
+function vQuiz() {
+  const q = QUIZ[S.qi];
+  const opts = q[1].map((o, i) => `<button type="button" class="opt ${S.picks[S.qi] === i ? 'on' : ''}" data-act="pick" data-v="${i}">${esc(o[1])}</button>`).join('');
+  return `<div class="col" style="gap:20px">
+    ${nav('quizBack', `第 ${S.qi + 1} 題／共 ${NQ} 題`)}
+    <div class="bar"><i style="width:${Math.round((S.qi + 1) / NQ * 100)}%"></i></div>
+    <h2 style="font-size:26px;line-height:1.45;font-weight:700">${esc(q[0])}</h2>
+    ${q[2] ? `<p style="margin:0;font-size:16px;line-height:1.6;color:var(--sub);background:#fff;border-radius:12px;padding:12px 14px">${esc(q[2])}</p>` : ''}
+    <div class="col" style="gap:12px">${opts}</div>
+  </div>`;
+}
+function href(kind, c) {
+  if (kind === 'book') return CONFIG.BOOK_URL;
+  if (kind === 'line') return CONFIG.LINE_URL;
+  const u = CONFIG.SHOP_BY_TYPE[c] || CONFIG.SHOP_URL;
+  return u === '#' ? u : u + (u.includes('?') ? '&' : '?') + 'utm_source=quiz&utm_medium=' + encodeURIComponent(SRC) + '&utm_campaign=' + c;
+}
+function vReport() {
+  const r = result(), d = DETAIL[r.c];
+  const tips = d[1].map((t, i) => `<div style="display:flex;gap:10px;align-items:flex-start"><span style="flex-shrink:0;width:24px;height:24px;border-radius:12px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px">${i + 1}</span><span style="font-size:16px;line-height:1.65;color:#2F3A34">${t}</span></div>`).join('');
+  return `<div class="col" style="gap:16px">
+    <span style="font-size:17px;color:var(--sub);text-align:center">如果你是動物，你會是</span>
+    <img class="sharecard" src="card_${r.c}.jpg" alt="我的吃貨動物是${r.T[0]}：${r.T[1]}">
+    <div class="card col" style="gap:10px;padding:16px">
+      <span style="font-size:17px;font-weight:700;text-align:center">你是${r.T[0]}！朋友會是哪一種？</span>
+      <div class="share">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl(r.c, 'fb'))}" data-share="fb" style="background:#1877F2">Facebook</a>
+        <button type="button" data-share="line" style="background:#06C755">LINE</button>
+        <button type="button" data-share="more" style="background:var(--accent)">更多分享</button>
+      </div>
+      <span id="shareMsg" style="font-size:13px;color:var(--sub);text-align:center">也可以長按圖卡儲存，貼到IG限動</span>
+    </div>
+    <p style="margin:0;font-size:16px;line-height:1.7;color:#3D4842;text-align:center">${r.T[2]}</p>
+    <div class="card col" style="gap:8px;padding:16px;background:#FBEFD9;border-color:#FBEFD9">
+      <span style="font-size:17px;font-weight:700;color:#7A4B0E">你的吃法，哪裡容易出事</span>
+      <p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${d[0]}</p>
+    </div>
+    <div class="card col" style="gap:12px;padding:16px;background:var(--soft);border-color:var(--soft)">
+      <span style="font-size:17px;font-weight:700;color:#1E5A3C">三個今天就能做的小改變</span>
+      ${tips}
+      <span style="font-size:13px;color:var(--sub)">營養師團隊建議，不用買任何東西</span>
+    </div>
+    <div class="card col" style="gap:6px;padding:14px 16px">
+      <span style="font-size:16px;font-weight:700">想偷懶的話</span>
+      <p style="margin:0;font-size:16px;line-height:1.7;color:#2F3A34">${d[3]} <a href="${href('shop', r.c)}" target="_blank" rel="noopener" data-click="shop" style="color:var(--accent);font-weight:700">看這個 →</a></p>
+    </div>
+    <p style="margin:0;font-size:13px;line-height:1.6;color:var(--sub)">本測驗用於了解個人飲食與生活習慣，不能取代醫師診斷。懷孕、哺乳、有慢性病或長期服藥者，調整飲食前請先諮詢營養師或醫師，也可以<a href="${CONFIG.BOOK_URL}" target="_blank" rel="noopener" data-click="book" style="color:var(--sub)">預約門診</a>。</p>
+    <button type="button" data-act="restart" style="align-self:center;height:44px;padding:0 16px;border:0;background:transparent;color:var(--sub);font-size:15px;text-decoration:underline">重新測驗</button>
+  </div>`;
+}
+function vDock() {
+  if (S.step !== 'report') return '';
+  return `<div class="dock"><a class="btn" href="${CONFIG.LINE_URL}" target="_blank" rel="noopener" data-click="line">加 LINE 問營養師</a></div>`;
+}
+
+const VIEWS = { intro: vIntro, quiz: vQuiz, report: vReport };
+function render(scrollTop) {
+  document.getElementById('main').innerHTML = VIEWS[S.step]();
+  document.getElementById('dock').innerHTML = vDock();
+  if (scrollTop) window.scrollTo(0, 0);
+  if (S.step === 'report') sendResult(result());
+}
+function go(step) { S.step = step; render(true); }
+
+document.addEventListener('click', (e) => {
+  const sh = e.target.closest('[data-share]');
+  if (sh) { if (sh.dataset.share === 'fb' && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) e.preventDefault(); doShare(sh.dataset.share); return; }
+  const link = e.target.closest('[data-click]');
+  if (link) { sendClick(link.dataset.click, result()); return; }
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const v = el.dataset.v;
+  switch (el.dataset.act) {
+    case 'start': S.qi = 0; go('quiz'); break;
+    case 'quizBack': if (S.qi > 0) { S.qi--; render(true); } else go('intro'); break;
+    case 'pick': S.picks[S.qi] = +v; S.answers[S.qi] = QUIZ[S.qi][1][+v][0]; if (S.qi < NQ - 1) { S.qi++; render(true); } else go('report'); break;
+    case 'restart': S = fresh(); go('intro'); break;
+  }
+});
+/* ---------- LINE（LIFF）---------- */
+async function initLiff() {
+  if (!CONFIG.LIFF_ID || !window.liff) return;
+  try {
+    await liff.init({ liffId: CONFIG.LIFF_ID });
+    IN_LINE = liff.isInClient();
+    if (!liff.isLoggedIn()) { if (IN_LINE) liff.login(); return; }
+    const p = await liff.getProfile();
+    LINE_UID = p.userId || '';
+  } catch (e) { /* 不在LINE或設定有誤時，測驗照常進行 */ }
+}
+
+render();
+initLiff();
+</script>
+</body>
+</html>
